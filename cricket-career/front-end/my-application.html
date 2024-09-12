@@ -1,0 +1,317 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js" integrity="sha512-JSCFHhKDilTRRXe9ak/FJ28dcpOJxzQaCd3Xg8MyF6XFjODhy/YMCM8HW0TFDckNHWUewW+kfvhin43hKtJxAw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js" integrity="sha512-JSCFHhKDilTRRXe9ak/FJ28dcpOJxzQaCd3Xg8MyF6XFjODhy/YMCM8HW0TFDckNHWUewW+kfvhin43hKtJxAw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <title>Cricket career</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+    textarea {
+      height: 100px;
+    }
+    button {
+      padding: 10px 15px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .search-container {
+      margin-top: 20px;
+      display: flex;
+     width: 30%;
+     margin-left: 70%;
+    }
+    .search-container input {
+      flex: 1;
+      margin-right: 10px;
+    }
+    .player-info {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.photo-container {
+  flex-shrink: 0;
+}
+
+.photo-container img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.details {
+  flex: 1;
+  margin-left: 20px;
+}
+
+.details h2 {
+  margin: 0;
+  font-size: 1.5em;
+}
+
+.details p {
+  margin: 5px 0;
+}
+
+.personal-info,
+.career-info {
+  margin-top: 20px;
+}
+
+.personal-info h3,
+.career-info h3 {
+  margin-top: 0;
+}
+
+.edit-button {
+  padding: 10px 15px;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  margin-left: 20px;
+}
+
+.edit-button:hover {
+  background-color: #218838;
+}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 style="text-align: center;">Player Information</h1>
+    <form id="playerForm">
+      <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="dateOfBirth">Date of Birth:</label>
+        <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+      </div>
+      <div class="form-group">
+        <label for="photoUrl">Photo URL:</label>
+        <input type="url" id="photoUrl" name="photoUrl" required>
+      </div>
+      <div class="form-group">
+        <label for="birthPlace">Birth Place:</label>
+        <input type="text" id="birthPlace" name="birthPlace" required>
+      </div>
+      <div class="form-group">
+        <label for="careerInfo">Career Info:</label>
+        <textarea id="careerInfo" name="careerInfo" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="matches">Matches:</label>
+        <input type="number" id="matches" name="matches" required>
+      </div>
+      <div class="form-group">
+        <label for="score">Score:</label>
+        <input type="number" id="score" name="score" required>
+      </div>
+      <div class="form-group">
+        <label for="fifties">Fifties:</label>
+        <input type="number" id="fifties" name="fifties" required>
+      </div>
+      <div class="form-group">
+        <label for="centuries">Centuries:</label>
+        <input type="number" id="centuries" name="centuries" required>
+      </div>
+      <div class="form-group">
+        <label for="wickets">Wickets:</label>
+        <input type="number" id="wickets" name="wickets" required>
+      </div>
+      <div class="form-group">
+        <label for="average">Average:</label>
+        <input type="number" step="0.01" id="average" name="average" required>
+      </div>
+      <input type="hidden" id="edit" name="edit" value="0">
+
+      <button type="submit">Submit</button>
+    </form>
+
+  </div>
+    <div class="search-container">
+      <input type="text" id="searchName" placeholder="Enter player name" >
+      <button id="searchButton">Search</button>
+    </div>
+
+  
+<div id="playerInfo" class="player-info" style="display: none;">
+  <div class="photo-container">
+    <img id="playerPhoto" src="" alt="no pic">
+    <h2 id="playerName"></h2>
+  
+  </div>
+  <div class="details">
+  
+    <div class="personal-info">
+      <h3>Personal Info</h3>
+      <p id="playerBirthPlace"></p>
+      <p id="playerMatches"></p>
+      <p id="playerFifties"></p>
+      <p id="playerCenturies"></p>
+      <p id="playerWickets"></p>
+      <p id="playerAverage"></p>
+      <p id="playerScore"></p>
+    </div>
+    <div class="career-info">
+      <h3>Career Info</h3>
+      <p id="playerCareerInfo"></p>
+    </div>
+  </div>
+  
+  <button id="editButton" class="edit-button">Edit Player</button>
+</div>
+
+  
+
+  <script>
+    document.getElementById('playerForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      const name =event.target.name.value;
+      const formData = {
+    name: name,
+    dateOfBirth: event.target.dateOfBirth.value,
+    photoUrl: event.target.photoUrl.value,
+    birthPlace: event.target.birthPlace.value,
+    careerInfo: event.target.careerInfo.value,
+    matches: event.target.matches.value,
+    score:event.target.score.value,
+    fifties: event.target.fifties.value,
+    centuries: event.target.centuries.value,
+    wickets: event.target.wickets.value,
+    average: event.target.average.value
+  };
+  console.log(formData);
+
+  const isEdit = document.getElementById('edit').value === '1'; 
+  
+  if (isEdit) {
+    
+    axios.put(`http://localhost:3000/cricket/editplayers/${name}`, formData)
+      .then(response => {
+        console.log('Player updated:', response.data);
+       displaydata(name);
+        document.getElementById('edit').value = '0'; 
+
+      })
+      .catch(error => {
+        console.error('Error updating player:', error);
+      });
+  } else {
+
+
+  axios.post('http://localhost:3000/cricket/addplayer', formData)
+    .then(response => {
+      console.log('Player added:', response.data);
+      
+    })
+    .catch(error => {
+      console.error('Error adding player:', error);
+     
+    });
+  }
+});  
+
+function displaydata(name){
+  console.log(name);
+   
+  axios.get(`http://localhost:3000/cricket/getplayer/${name}`)
+  .then(response => {
+    const player = response.data;
+    if (player.error) {
+      document.getElementById('playerInfo').style.display = 'none';
+      alert('Player not found.');
+    } else {
+      document.getElementById('playerPhoto').src = player.photoUrl;
+      document.getElementById('playerName').textContent = `Name: ${player.name}`;
+      document.getElementById('playerBirthPlace').textContent = `Birth Place: ${player.birthPlace}`;
+      document.getElementById('playerCareerInfo').textContent = `Career Info: ${player.careerInfo}`;
+      document.getElementById('playerMatches').textContent = `Matches: ${player.matches}`;
+      document.getElementById('playerFifties').textContent = `Fifties: ${player.fifties}`;
+      document.getElementById('playerCenturies').textContent = `Centuries: ${player.centuries}`;
+      document.getElementById('playerWickets').textContent = `Wickets: ${player.wickets}`;
+      document.getElementById('playerAverage').textContent = `Average: ${player.average}`;
+      document.getElementById('playerScore').textContent = `Score: ${player.score}`; // New field for score
+
+      document.getElementById('playerInfo').style.display = 'flex';
+      document.getElementById('editButton').onclick = function() {
+          editPlayer(player.name, player.dateOfBirth, player.photoUrl, player.birthPlace, player.careerInfo, player.matches, player.score, player.fifties, player.centuries, player.wickets, player.average);
+        };
+    }
+  })
+
+    .catch(error => {
+      console.error('Error adding player:', error);
+     
+    })  ;
+}
+    
+
+    document.getElementById('searchButton').addEventListener('click', function() {
+      const playerName = document.getElementById('searchName').value.toLowerCase();
+    displaydata(playerName);
+    });
+    
+    function editPlayer(name, dateOfBirth, photoUrl, birthPlace, careerInfo, matches, score, fifties, centuries, wickets, average) {
+  // Fill the form with the player data
+  document.getElementById('name').value = name;
+  document.getElementById('dateOfBirth').value = dateOfBirth;
+  document.getElementById('photoUrl').value = photoUrl;
+  document.getElementById('birthPlace').value = birthPlace;
+  document.getElementById('careerInfo').value = careerInfo;
+  document.getElementById('matches').value = matches;
+  document.getElementById('score').value = score;
+  document.getElementById('fifties').value = fifties;
+  document.getElementById('centuries').value = centuries;
+  document.getElementById('wickets').value = wickets;
+  document.getElementById('average').value = average;
+
+  // Set the hidden 'edit' field to 1, so it knows it's in edit mode
+  document.getElementById('edit').value = '1';
+
+ 
+}
+
+  
+
+  </script>
+  </script>
+</body>
+</html>
