@@ -82,13 +82,15 @@
 </head>
 <body>
   <div class="main">
+   <span style="display: flex;">
     <form id="myform">
       <label for="select-date">Select Date:</label>
       <input type="date" name="date" id="select-date" required>
-      <button type="submit">Search</button> <button id="fetch-attendance-report">Fetch Attendance Report</button>
+      <button type="submit">Search</button>
       
      
-    </form>
+    </form> &emsp;&emsp13;<button id="fetch-attendance-report" style="height: 4%;">Fetch Attendance Report</button>
+  </span>
    
     <div id="attendance-display" class="attendance-display"></div>
     <div id="attendance-form" class="attendance-form"></div>
@@ -167,7 +169,7 @@
   var markAttendanceButton = document.createElement('button');
   markAttendanceButton.id = 'mark-attendance';
   markAttendanceButton.textContent = 'Mark Attendance';
-  markAttendanceButton.disabled = true; // Initially disabled
+  markAttendanceButton.disabled = true; 
   formDiv.appendChild(markAttendanceButton);
 
   formDiv.addEventListener('change', function() {
@@ -206,6 +208,59 @@
     markAttendanceButton.disabled = !isValid
   }
 }
+
+
+document.getElementById('fetch-attendance-report').addEventListener('click', function() {
+  document.getElementById('attendance-display').innerHTML = '';
+  document.getElementById('attendance-form').innerHTML = '';
+  try {
+    axios.get('http://localhost:3000/attendence/fetchdata')
+      .then(response => {
+        const data = response.data;
+        const studentStats = {};
+        let totalDays = data.length; 
+
+        
+        data.forEach(dayRecord => {
+          dayRecord.records.forEach(record => {
+            const { student_name, status } = record;
+            if (!studentStats[student_name]) {
+              studentStats[student_name] = { days_present: 0, total_days: totalDays };
+            }
+            if (status === 'Present') {
+              studentStats[student_name].days_present++;
+            }
+          });
+        });
+
+
+        const reportDiv = document.getElementById('attendance-report');
+        reportDiv.innerHTML = '';
+
+        for (const student in studentStats) {
+          const stats = studentStats[student];
+          const percentage = ((stats.days_present / stats.total_days) * 100).toFixed(2);
+
+          const div = document.createElement('div');
+          div.className = 'student-entry';
+          div.innerHTML = `
+            <span>${student}</span> 
+             ${stats.days_present} / ${stats.total_days}  &emsp;&emsp;&emsp;&emsp;&emsp;
+            ${percentage}%
+          `;
+          reportDiv.appendChild(div);
+        }
+
+      })
+      .catch(function(error) {
+        console.error('Error fetching attendance data:', error);
+      });
+  } catch (err) {
+    console.log('Error:', err);
+  }
+});
+
+
 
 </script>
 </body>
