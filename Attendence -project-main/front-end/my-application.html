@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js" integrity="sha512-JSCFHhKDilTRRXe9ak/FJ28dcpOJxzQaCd3Xg8MyF6XFjODhy/YMCM8HW0TFDckNHWUewW+kfvhin43hKtJxAw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+
+    .main {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    form {
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-size: 16px;
+      margin-right: 10px;
+    }
+
+    input[type="date"] {
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      color: #fff;
+      background-color: #007bff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .attendance-display,
+    .attendance-form {
+      margin-top: 20px;
+    }
+
+    .student-entry {
+      margin-bottom: 15px;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+    }
+
+    .student-entry span {
+      flex: 1;
+      margin-right: 20px; 
+    }
+
+    .student-entry label {
+      margin-right: 20px; 
+    }
+
+    .attendance-form .student-entry {
+      margin-bottom: 10px;
+    }
+    
+  </style>
+</head>
+<body>
+  <div class="main">
+   <span style="display: flex;">
+    <form id="myform">
+      <label for="select-date">Select Date:</label>
+      <input type="date" name="date" id="select-date" required>
+      <button type="submit">Search</button>
+      
+     
+    </form> &emsp;&emsp13;<button id="fetch-attendance-report" style="height: 4%;">Fetch Attendance Report</button>
+  </span>
+   
+    <div id="attendance-display" class="attendance-display"></div>
+    <div id="attendance-form" class="attendance-form"></div>
+        <div id="attendance-report" class="attendance-report"></div>
+  
+      
+    
+  </div>  
+<script>
+ document.getElementById('myform').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      document.getElementById('attendance-display').innerHTML = '';
+  document.getElementById('attendance-form').innerHTML = '';
+  document.getElementById('attendance-report').innerHTML = '';
+  
+      const date = document.getElementById('select-date').value;
+      try {
+        const response = await axios.get(`http://localhost:3000/attendence/search?date=${date}`);
+       displayAttendance(response.data);
+      } catch (error) {
+        console.error('Error fetching attendance:', error);
+        displayForm();
+      }
+    });
+
+     function displayAttendance(data){
+        const displayDiv = document.getElementById('attendance-display');
+      displayDiv.innerHTML = '';
+
+      if (data.length === 0) {
+        displayForm(); 
+        return;
+      }
+
+      data.forEach(record => {
+        const div = document.createElement('div');
+        div.className = 'student-entry';
+        div.innerHTML = `${record.student_name}: ${record.status}`;
+        displayDiv.appendChild(div);
+      })
+     }
+
+     function displayForm() {
+  var formDiv = document.getElementById('attendance-form');
+  formDiv.innerHTML = '';
+
+  var students = [
+    'Sive',
+    'Rajesh',
+    'Ashok',
+    'Sai',
+    'Harshita',
+    'Ram',
+    'Krishna',
+    'Ammu',
+    'Anu',
+    'Adi',
+    'Venkat'
+  ];
+
+  students.forEach(function(student) {
+    var studentDiv = document.createElement('div');
+    studentDiv.className = 'student-entry';
+    studentDiv.innerHTML = `
+      <span>${student}</span>
+      <label>
+        <input type="radio" id="${student}-present" name="${student}-status" value="Present"> Present
+      </label>
+      <label>
+        <input type="radio" id="${student}-absent" name="${student}-status" value="Absent"> Absent
+      </label>
+    `;
+    formDiv.appendChild(studentDiv);
+  });
+
+  var markAttendanceButton = document.createElement('button');
+  markAttendanceButton.id = 'mark-attendance';
+  markAttendanceButton.textContent = 'Mark Attendance';
+  markAttendanceButton.disabled = true; 
+  formDiv.appendChild(markAttendanceButton);
+
+  formDiv.addEventListener('change', function() {
+    validateForm();
+  });
+
+  document.getElementById('mark-attendance').addEventListener('click', function() {
+    var attendanceData = students.map(function(student) {
+      var presentChecked = document.getElementById(student + '-present')?.checked;
+      var absentChecked = document.getElementById(student + '-absent')?.checked;
+      var status = presentChecked ? 'Present' : (absentChecked ? 'Absent' : 'Absent'); 
+      return { student_name: student, status: status };
+    });
+
+    var date = document.getElementById('select-date').value;
+
+    axios.post('http://localhost:3000/attendence/postattendence', { date: date, attendance: attendanceData })
+      .then(function(response) {
+        alert(response.data.message);
+        document.getElementById('attendance-display').innerHTML = '';
+        document.getElementById('attendance-form').innerHTML = '';
+      
+      })
+      .catch(function(error) {
+        console.error('Error marking attendance:', error);
+      });
+  });
+
+  function validateForm() {
+    var isValid = students.every(function(student) {
+      var presentChecked = document.getElementById(student + '-present')?.checked;
+      var absentChecked = document.getElementById(student + '-absent')?.checked;
+      return presentChecked || absentChecked;
+    });
+
+    markAttendanceButton.disabled = !isValid
+  }
+}
+
+
+document.getElementById('fetch-attendance-report').addEventListener('click', function() {
+  document.getElementById('attendance-display').innerHTML = '';
+  document.getElementById('attendance-form').innerHTML = '';
+  try {
+    axios.get('http://localhost:3000/attendence/fetchdata')
+      .then(response => {
+        const data = response.data;
+        const studentStats = {};
+        let totalDays = data.length; 
+
+        
+        data.forEach(dayRecord => {
+          dayRecord.records.forEach(record => {
+            const { student_name, status } = record;
+            if (!studentStats[student_name]) {
+              studentStats[student_name] = { days_present: 0, total_days: totalDays };
+            }
+            if (status === 'Present') {
+              studentStats[student_name].days_present++;
+            }
+          });
+        });
+
+
+        const reportDiv = document.getElementById('attendance-report');
+        reportDiv.innerHTML = '';
+
+        for (const student in studentStats) {
+          const stats = studentStats[student];
+          const percentage = ((stats.days_present / stats.total_days) * 100).toFixed(2);
+
+          const div = document.createElement('div');
+          div.className = 'student-entry';
+          div.innerHTML = `
+            <span>${student}</span> 
+             ${stats.days_present} / ${stats.total_days}  &emsp;&emsp;&emsp;&emsp;&emsp;
+            ${percentage}%
+          `;
+          reportDiv.appendChild(div);
+        }
+
+      })
+      .catch(function(error) {
+        console.error('Error fetching attendance data:', error);
+      });
+  } catch (err) {
+    console.log('Error:', err);
+  }
+});
+
+
+
+</script>
+</body>
+</html>
