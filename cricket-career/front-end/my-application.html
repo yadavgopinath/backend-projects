@@ -227,11 +227,11 @@
     axios.put(`http://localhost:3000/cricket/editplayers/${name}`, formData)
       .then(response => {
         console.log('Player updated:', response.data);
-       displaydata(name);
+       displaydata(name); 
         document.getElementById('edit').value = '0'; 
 
       })
-      .catch(error => {
+      .catch(error => { 
         console.error('Error updating player:', error);
       });
   } else {
