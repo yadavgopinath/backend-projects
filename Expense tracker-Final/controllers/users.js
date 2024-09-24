@@ -6,7 +6,7 @@ try{
 
  const newUser = await Users.create({
     name:name,
-    email:email,
+    email:email.toLowerCase(),
     password:password,
 
  });
@@ -32,3 +32,30 @@ try{
 }
 
 };
+
+exports.checkUser = async(req,res,next)=>{
+
+    const {email,password} = req.body;
+try{
+
+
+    const userPresent=await Users.findOne({
+        where:{email:email}
+    });
+
+    if(!userPresent){
+        return res.status(404).json({error:'Email does not exist'});
+    }
+    if(userPresent.password != password){
+        return res.status(401).json({error:'Incorrect Password'});
+    }
+
+
+return res.status(200).json({message:'Login Successfully',userPresent});
+
+}catch(err){
+  return  res.status(500).json({
+        error:err
+    })
+}
+}
