@@ -94,7 +94,6 @@
       var signupBtn = document.getElementById('signup-btn');
       var spinner = document.getElementById('loading-spinner');
     
-      // Disable the button and show the spinner
       signupBtn.disabled = true;
       spinner.classList.remove('d-none');
     
@@ -104,23 +103,24 @@
         password: password
       };
     
-      // Send data to the backend using Axios
-      axios.post('/signup', data)
+     
+      axios.post('http://localhost:3000/user/signup', data)
         .then(function(response) {
           console.log('Form submitted successfully:', response.data);
-          // Handle successful response (e.g., redirect or display a success message)
-        })
-        .catch(function(error) {
-          // Show error message if there's an error
-          errorMsg.style.display = 'block'; // Show error message
-          errorMsg.innerText = 'An error occurred. Please try again.';
-          console.error('Error:', error);
-        })
-        .finally(function() {
-          // Always re-enable the button and hide the spinner
+          
           signupBtn.disabled = false;
           spinner.classList.add('d-none');
-        });
+        })
+        .catch(function(error) {
+          
+          
+          errorMsg.style.display = 'block'; 
+          errorMsg.innerText = error.response.data.message?error.response.data.message:'An error occurred. Please try again.';
+          console.error('Error:', error);
+          signupBtn.disabled = false;
+          spinner.classList.add('d-none');
+        })
+       
     });
     </script>
     
