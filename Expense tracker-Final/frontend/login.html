@@ -63,7 +63,7 @@
         <label for="password" class="form-label">Password</label>
         <input type="password" class="form-control" id="password" placeholder="Enter your password" >
       </div>
-      <div id="error-msg" class="text-danger mb-3" style="display: none;"></div>
+      <div id="error-msg" class="mb-3" style="display: none;color: red;"></div>
 
       <div class="d-grid gap-2">
         <button type="submit" class="btn btn-custom" id="login-btn">
@@ -87,6 +87,7 @@
     var errorMsg = document.getElementById('error-msg');
       errorMsg.style.display = 'none'; 
       errorMsg.innerText = '';
+      errorMsg.style.color = 'red';
     
      
       var email = document.getElementById('email').value;
@@ -111,7 +112,15 @@
         axios.post('http://localhost:3000/user/login', data)
         .then(function(response) {
           console.log(response.data);
-          
+          if(response.status===200)
+          {
+            errorMsg.style.display = 'block';
+            errorMsg.style.color = 'green';
+           
+            
+            errorMsg.innerText = `${response.data.message}`;
+          }
+        
          
         })
         .catch(function(error) {
