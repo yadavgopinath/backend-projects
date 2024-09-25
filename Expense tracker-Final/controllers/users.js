@@ -1,22 +1,33 @@
 const Users = require('../models/users');
+const bcrypt = require('bcrypt');
 
 exports.addUsers = async(req,res,next) =>{
 try{
     const {name,email,password } = req.body;
 
- const newUser = await Users.create({
-    name:name,
-    email:email.toLowerCase(),
-    password:password,
+    if (!email || !password || !name) {
+        return res.status(400).json({ error: 'Bad Parameter:Something is missing ' });
+      }
+      const saltrounds=10;
+     
+bcrypt.hash(password,saltrounds,async(hash , err)=>{
+    console.log(err);
+    console.log('hello2');
+   
+    await Users.create({
+        name,
+        email:email.toLowerCase(),
+        password:hash,
+    
+     })
+     res.status(200).json({
+        message:"user added successfully ",
+        
+     });
 
- });
-
- return res.status(200).json({
-    message:"user added successfully ",
-    user:newUser
- });
-
+})
 }catch(err){
+  
     if(err.name==='SequelizeUniqueConstraintError'){
      return    res.status(400).json({
             message:'Email Already Exist '
@@ -25,9 +36,6 @@ try{
  res.status(500).json({
     error:err
  });
-
-
-
 
 }
 
@@ -43,15 +51,27 @@ try{
         where:{email:email}
     });
 
-    if(!userPresent){
+    if(userPresent){
+        bcrypt.compare(password,userPresent.password,(err,result)=>{
+            if(err)
+            {
+                throw new Error('Something Went Wrong');
+            }
+            if(result==true)
+            {
+                return res.status(200).json({message:'Login Successfully',userPresent});
+            }else{
+                return res.status(401).json({error:'Incorrect Password'});
+            }
+        })
+       
+    }else{
         return res.status(404).json({error:'Email does not exist'});
-    }
-    if(userPresent.password != password){
-        return res.status(401).json({error:'Incorrect Password'});
+        
     }
 
 
-return res.status(200).json({message:'Login Successfully',userPresent});
+
 
 }catch(err){
   return  res.status(500).json({
