@@ -6,11 +6,17 @@ try{
     const {name,email,password } = req.body;
 
     if (!email || !password || !name) {
-        return res.status(400).json({ error: 'Bad Parameter:Something is missing ' });
+        return res.status(400).json({ error: 'Bad Parameter: Something is missing' });
       }
+
+      const existingUser = await Users.findOne({ where: { email: email } });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email already exists' });
+    }
+
       const saltrounds=10;
      
-bcrypt.hash(password,saltrounds,async(hash , err)=>{
+bcrypt.hash(password,saltrounds,async(err,hash)=>{
     console.log(err);
     console.log('hello2');
    
