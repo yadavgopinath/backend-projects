@@ -23,13 +23,13 @@
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     font-family: 'Poppins', sans-serif;
-    color: #fff; /* Set default text color to white for contrast */
+    color: #fff; 
   }
   
   .form-heading {
     text-align: center;
     margin-bottom: 20px;
-    color: #f1f1f1; /* Lighter shade of white for a sleek look */
+    color: #f1f1f1; 
     font-size: 24px;
     font-weight: 600;
   }
@@ -161,11 +161,11 @@
           console.log(response.data);
           if(response.status===200)
           {
-            errorMsg.style.display = 'block';
+           // errorMsg.style.display = 'block';
             //errorMsg.style.color = 'green';
-           
+           alert(`${response.data.message}`);
             
-            errorMsg.innerText = `${response.data.message}`;
+           // errorMsg.innerText = `${response.data.message}`;
           }
         
          

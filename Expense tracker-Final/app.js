@@ -9,9 +9,12 @@ app.use(cors());
 app.use(bodyParser.json({extended:false}));
 
 const userroutes=require('./routes/users');
+const expensesroutes = require('./routes/expenses');
 const Users = require('./models/users');
+const expenses = require('./models/expenses');
 
 app.use('/user',userroutes);
+app.use('/expenses',expensesroutes);
 
 sequelize.sync()
   .then((result) => {

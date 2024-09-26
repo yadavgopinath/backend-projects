@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense Tracker</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js" integrity="sha512-JSCFHhKDilTRRXe9ak/FJ28dcpOJxzQaCd3Xg8MyF6XFjODhy/YMCM8HW0TFDckNHWUewW+kfvhin43hKtJxAw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+ 
+  <style>
+    body {
+      background-color: #f4f4f4;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    h1 {
+      text-align: center;
+      background-color: #47a4f6;
+      padding: 20px;
+      color: white;
+      font-size: 28px;
+      margin-bottom: 30px;
+    }
+
+    .mycont {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    input, select {
+      padding: 10px;
+      margin-top: 5px;
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 12px 30px;
+      background-color: #17a2b8;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #138496;
+    }
+
+    .list-container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      text-align: center;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 15px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f8f9fa;
+      font-size: 16px;
+    }
+
+    @media (max-width: 767px) {
+      .mycont {
+        display: block;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Expense Tracker</h1>
+
+  <div class="container">
+    <form id="myform">
+      <div class="row mycont">
+        <div class="col-md-4 mb-3">
+          <label for="amount" class="col-form-label-md">Amount</label>
+          <input type="number" id="amount" class="form-control" placeholder="Enter amount">
+        </div>
+        <div class="col-md-4 mb-3">
+          <label for="description" class="col-form-label-md">Description</label>
+          <input type="text" id="desc" class="form-control" placeholder="Enter description">
+        </div>
+        <div class="col-md-4 mb-3">
+          <label for="category" class="col-form-label-md">Category</label>
+          <select id="category" class="form-select">
+            <option value="">Select Category</option>
+            <option value="Travelling">Travelling</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Food and Drink">Food and Drink</option>
+            <option value="Personal Care">Personal Care</option>
+            <option value="Taxes">Taxes</option>
+          </select>
+        </div>
+      </div>
+      <div class="text-center">
+        <button type="submit" class="btn btn-info btn-lg">Submit</button>
+      </div>
+    </form>
+
+    <div id="error-message" class="text-danger text-center mt-3"></div>
+
+    <div class="list-container">
+      <table id="expenseTable" class="table table-striped">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="productlist">
+     
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+     window.addEventListener("DOMContentLoaded",loadexpense);
+    document.getElementById('myform').addEventListener('submit',function(e){
+        e.preventDefault();
+    const amount=document.getElementById('amount').value;
+    const description=document.getElementById('desc').value;
+    const category=document.getElementById('category').value;
+   
+    if (!amount || !description || category === 'select') {
+        document.getElementById('error-message').innerText = 'All fields are required and must be filled out correctly.';
+        return;
+      }
+      document.getElementById('error-message').innerText = '';
+      const formdata={
+        amount:amount,
+        description:description,
+       
+        category:category
+    };
+
+      axios.post("http://localhost:3000/expenses/addexpenses",formdata)
+        .then((response)=>{
+           loadexpense();
+        
+         document.getElementById('amount').value = '';
+            document.getElementById('desc').value = '';
+            document.getElementById('category').value = 'select';
+        }).catch((err)=>{
+            console.log(err);
+        })
+
+    });
+
+    function loadexpense() {
+  axios.get("http://localhost:3000/expenses/getexpense")
+    .then((response) => {
+      const expenses = response.data; 
+      const productList = document.getElementById('productlist');
+      productList.innerHTML = ''; 
+
+      expenses.forEach(expense => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${expense.category}</td>
+          <td>${expense.description}</td>
+          <td>${expense.amount}</td>
+          <td>
+            <button class="btn btn-danger" onclick="deleteExpense('${expense.id}')">Delete</button>
+          </td>
+        `;
+        productList.insertBefore(row,productList.firstChild);
+      });
+    })
+    .catch((error) => {
+      console.error('Error loading expenses:', error);
+    });
+}
+
+function deleteExpense(id) {
+   
+    if (!id) {
+    console.error('No ID provided for deletion.');
+    return;
+  }
+  axios.delete(`http://localhost:3000/expenses/delete-expense/${id}`)
+    .then(() => {
+      loadexpense();
+    })
+    .catch((error) => {
+      console.error('Error deleting expense:', error);
+    });
+}
+
+    
+
+
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
