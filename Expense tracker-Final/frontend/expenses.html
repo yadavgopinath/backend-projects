@@ -163,8 +163,9 @@
        
         category:category
     };
-
-      axios.post("http://localhost:3000/expenses/addexpenses",formdata)
+    const token = localStorage.getItem('token');
+    console.log(token);
+      axios.post("http://localhost:3000/expenses/addexpenses",formdata,{headers:{'Authorization':token}})
         .then((response)=>{
            loadexpense();
         
@@ -178,9 +179,12 @@
     });
 
     function loadexpense() {
-  axios.get("http://localhost:3000/expenses/getexpense")
+        const token = localStorage.getItem('token');
+        console.log(token);
+  axios.get("http://localhost:3000/expenses/getexpense",{headers:{'Authorization':token}})
     .then((response) => {
-      const expenses = response.data; 
+      const expenses = response.data.Allexpenses; 
+      console.log(expenses);
       const productList = document.getElementById('productlist');
       productList.innerHTML = ''; 
 
@@ -203,12 +207,13 @@
 }
 
 function deleteExpense(id) {
+    const token = localStorage.getItem('token');
    
     if (!id) {
     console.error('No ID provided for deletion.');
     return;
   }
-  axios.delete(`http://localhost:3000/expenses/delete-expense/${id}`)
+  axios.delete(`http://localhost:3000/expenses/delete-expense/${id}`,{headers:{'Authorization':token}})
     .then(() => {
       loadexpense();
     })

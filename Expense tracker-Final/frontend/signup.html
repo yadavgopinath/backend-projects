@@ -169,8 +169,12 @@
      
       axios.post('http://localhost:3000/user/signup', data)
         .then(function(response) {
+          var name = document.getElementById('name').value = '';
+      var email = document.getElementById('email').value = '';
+      var password = document.getElementById('password').value = '';
           console.log('Form submitted successfully:', response.data);
-          
+          window.location.href = '/Expense%20tracker-Final/frontend/login.html';
+
           signupBtn.disabled = false;
           spinner.classList.add('d-none');
         })

@@ -158,12 +158,18 @@
       };
         axios.post('http://localhost:3000/user/login', data)
         .then(function(response) {
-          console.log(response.data);
+          var email = document.getElementById('email').value = '';
+          var password = document.getElementById('password').value = '';
+          //console.log(response.data);
           if(response.status===200)
           {
            // errorMsg.style.display = 'block';
             //errorMsg.style.color = 'green';
            alert(`${response.data.message}`);
+          if(response.data.token){
+            localStorage.setItem('token',response.data.token)
+          }
+           window.location.href = '/Expense%20tracker-Final/frontend/expenses.html';
             
            // errorMsg.innerText = `${response.data.message}`;
           }

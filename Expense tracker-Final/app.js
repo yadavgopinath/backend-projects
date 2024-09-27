@@ -15,6 +15,8 @@ const expenses = require('./models/expenses');
 
 app.use('/user',userroutes);
 app.use('/expenses',expensesroutes);
+Users.hasMany(expenses);
+expenses.belongsTo(Users);
 
 sequelize.sync()
   .then((result) => {
