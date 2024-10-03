@@ -9,9 +9,14 @@ app.use(cors());
 app.use(bodyParser.json({extended:false}));
 
 const userroutes=require('./routes/users');
+const expensesroutes = require('./routes/expenses');
 const Users = require('./models/users');
+const expenses = require('./models/expenses');
 
 app.use('/user',userroutes);
+app.use('/expenses',expensesroutes);
+Users.hasMany(expenses);
+expenses.belongsTo(Users);
 
 sequelize.sync()
   .then((result) => {
