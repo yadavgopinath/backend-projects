@@ -4,6 +4,7 @@ const cors = require ('cors');
 const bodyParser = require('body-parser');
 const app=express();
 const sequelize = require('./util/database');
+require('dotenv').config();
 
 app.use(cors());
 app.use(bodyParser.json({extended:false}));
@@ -12,11 +13,18 @@ const userroutes=require('./routes/users');
 const expensesroutes = require('./routes/expenses');
 const Users = require('./models/users');
 const expenses = require('./models/expenses');
+const order = require('./models/order');
+const { FORCE } = require('sequelize/lib/index-hints');
+const purchaseroutes = require('./routes/purchase');
 
 app.use('/user',userroutes);
 app.use('/expenses',expensesroutes);
+app.use('/purchase',purchaseroutes);
+
 Users.hasMany(expenses);
 expenses.belongsTo(Users);
+Users.hasMany(order);
+order.belongsTo(Users);
 
 sequelize.sync()
   .then((result) => {

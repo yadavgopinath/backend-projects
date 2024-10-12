@@ -34,8 +34,9 @@ exports.addexpenses = async(req,res,next)=>{
 
 exports.getexpenses = async(req,res,next)=>{
     try{
+        
      const Allexpenses=  await expenses.findAll({where:{userid:req.user.id}});
-     return res.status(200).json({Allexpenses,success:true});
+     return res.status(200).json({Allexpenses,success:true,isPrimium:+req.user.isprimiumuser});
 
     }catch(err){
         return res.status(500).json({

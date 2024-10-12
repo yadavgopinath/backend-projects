@@ -119,7 +119,7 @@
         </button>
       </div><br>
       <div class="signup-link">
-        Don't have an account? <a href="/Expense%20tracker-Final/frontend/signup.html">Sign up here</a>
+        Don't have an account? <a href="../frontend/signup.html">Sign up here</a>
       </div>
     </form>
   </div>
@@ -128,7 +128,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
   
-  document.getElementById('login-form').addEventListener('submit', function(e) { 
+  document.getElementById('login-form').addEventListener('submit', async function(e) { 
     e.preventDefault();
 
     var errorMsg = document.getElementById('error-msg');
@@ -156,7 +156,7 @@
         email: email,
         password: password
       };
-        axios.post('http://localhost:3000/user/login', data)
+      await  axios.post('http://localhost:3000/user/login', data)
         .then(function(response) {
           var email = document.getElementById('email').value = '';
           var password = document.getElementById('password').value = '';
@@ -169,7 +169,8 @@
           if(response.data.token){
             localStorage.setItem('token',response.data.token)
           }
-           window.location.href = '/Expense%20tracker-Final/frontend/expenses.html';
+          window.location.href = 'expenses.html';
+
             
            // errorMsg.innerText = `${response.data.message}`;
           }
