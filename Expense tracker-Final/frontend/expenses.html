@@ -12,6 +12,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js" integrity="sha512-JSCFHhKDilTRRXe9ak/FJ28dcpOJxzQaCd3Xg8MyF6XFjODhy/YMCM8HW0TFDckNHWUewW+kfvhin43hKtJxAw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
  
   <style>
+   
  #rz-pay{
   visibility: hidden;
  }
@@ -140,7 +141,58 @@ h1.navbar-brand {
      
      
     }
-  </style>
+    /*leaderBoard css*/
+    #leaderboard-container {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.pagination-controls button {
+  margin: 5px;
+}
+
+h3 {
+  font-family: sans-serif;
+}
+
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+#prev-page, #next-page {
+  margin: 0 10px;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+#page-info {
+  font-family: 'Lucida Sans', sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  color: #141415; /* Bootstrap primary blue */
+  margin: 0 15px;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+
+</style>
 </head>
 
 <body>
@@ -186,7 +238,7 @@ h1.navbar-brand {
             <option value="Food and Drink">Food and Drink</option>
             <option value="Personal Care">Personal Care</option>
             <option value="Taxes">Taxes</option>
-            <option value="Taxes">Taxes</option>
+            <option value="Taxes">Others</option>
           </select>
         </div>
       </div>
@@ -215,6 +267,30 @@ h1.navbar-brand {
       </table>
     </div>
   </div>
+
+  <div class="container">
+    <!-- Show Leaderboard Button -->
+    <div id="leaderboard-container" style="display: none; margin-top: 20px;">
+      <h2 class="text-center">Leadership Board</h2>
+      <table class="table table-striped">
+          <thead>
+              <tr>
+                  <th>Position</th>
+                  <th>Name</th>
+                  <th>Expenses</th>
+              </tr>
+          </thead>
+          <tbody id="leaderboard-body"></tbody>
+      </table>
+      <div class="pagination">
+        <button id="prev-page" class="btn btn-primary">Previous</button>
+        <span id="page-info" class="page-info"></span>
+        <button id="next-page" class="btn btn-primary">Next</button>
+      </div>
+      
+  </div>
+  
+  
 
   <script>
      window.addEventListener("DOMContentLoaded",loadexpense);
@@ -373,6 +449,7 @@ function updatePremiumStatus(isPremium) {
         premiumMessageDiv.id = 'premium-message';
         premiumMessageDiv.className = 'text-success fw-bold d-block text-center';
         premiumMessageDiv.innerHTML = 'You are a Premium User! 💎 &emsp13;&nbsp;&emsp13;&nbsp;';
+        
         navbar.insertBefore(premiumMessageDiv, buyPremiumButton);
 
         // Add the "Reports" link
@@ -384,9 +461,13 @@ function updatePremiumStatus(isPremium) {
 
         // Add the "Leaderboard" link
         const leaderboardLink = document.createElement('a');
-        leaderboardLink.id = 'Leaderboard';
+        leaderboardLink.id = 'Leaderboardmain';
         leaderboardLink.className = 'nav-link';
-        leaderboardLink.innerHTML = '<font style="font-family:\'Lucida Sans\', \'Lucida Sans Regular\', \'Lucida Grande\', \'Lucida Sans Unicode\', Geneva, Verdana, sans-serif, serif;font-weight: 800;font-size: 18px;">LeaderBoard👑</font>';
+       leaderboardLink.innerHTML = '<font style="font-family:\'Lucida Sans\', \'Lucida Sans Regular\', \'Lucida Grande\', \'Lucida Sans Unicode\', Geneva, Verdana, sans-serif, serif;font-weight: 800;font-size: 18px;">LeaderBoard👑</font>';
+       leaderboardLink.style.cursor = 'pointer'; // Make it look clickable  
+       leaderboardLink.addEventListener('click', function() {
+        showLeaderboard(); // Call your function to show the leaderboard
+    });
         navbar.insertBefore(leaderboardLink, buyPremiumButton);
 
     } else {
@@ -394,6 +475,69 @@ function updatePremiumStatus(isPremium) {
         buyPremiumButton.style.visibility = 'visible';
     }
 }
+let leaderboardData = []; // Declare leaderboardData globally
+let itemsPerPage = 1; // Declare itemsPerPage globally
+let currentPage = 1; // Declare currentPage globally
+
+//leaderBoard logic//////////////////////////////////////////////////////////////////////
+// Function to show leaderboard
+// Function to show leaderboard
+function showLeaderboard() {
+    currentPage = 1; // Reset current page when showing leaderboard
+    // Fetch leaderboard data from backend
+    const token = localStorage.getItem('token');
+    
+    axios.get('http://localhost:3000/premium/showLeaderBoard', {
+        headers: { 'Authorization': token }
+    })
+    .then(response => {
+        leaderboardData = response.data; // Get the data directly from the response
+        displayLeaderboardPage(currentPage); // Pass current page only
+        document.getElementById('leaderboard-container').style.display = 'block';
+    })
+    .catch(err => console.error('Error fetching leaderboard:', err));
+}
+
+// Function to display leaderboard based on current page
+function displayLeaderboardPage(page) {
+    const leaderboardBody = document.getElementById('leaderboard-body');
+    leaderboardBody.innerHTML = ''; // Clear previous entries
+
+    const startIndex = (page - 1) * itemsPerPage;
+    const endIndex = page * itemsPerPage;
+    const currentItems = leaderboardData.slice(startIndex, endIndex);
+
+    currentItems.forEach((user, index) => {
+        const row = `
+            <tr>
+                <td>${startIndex + index + 1}</td>
+                <td>${user.name}</td>
+                <td>${user.total_cost}</td>
+            </tr>
+        `;
+        leaderboardBody.innerHTML += row;
+    });
+
+    // Update pagination controls
+    document.getElementById('page-info').textContent = `Page ${page}`;
+    document.getElementById('prev-page').disabled = (page === 1);
+    document.getElementById('next-page').disabled = (endIndex >= leaderboardData.length);
+}
+
+// Pagination controls
+document.getElementById('prev-page').addEventListener('click', () => {
+    if (currentPage > 1) {
+        currentPage--;
+        displayLeaderboardPage(currentPage);
+    }
+});
+
+document.getElementById('next-page').addEventListener('click', () => {
+    if ((currentPage * itemsPerPage) < leaderboardData.length) {
+        currentPage++;
+        displayLeaderboardPage(currentPage);
+    }
+});
 
 
  
