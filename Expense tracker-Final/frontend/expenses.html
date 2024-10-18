@@ -12,64 +12,15 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js" integrity="sha512-JSCFHhKDilTRRXe9ak/FJ28dcpOJxzQaCd3Xg8MyF6XFjODhy/YMCM8HW0TFDckNHWUewW+kfvhin43hKtJxAw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
  
   <style>
-  
-/* Light Mode (Default) */
-body.light-mode {
-  background-color: white;
-  color: black;
-}
-
-body.light-mode .navbar {
-  background-color: #f8f9fa;
-  color: black;
-}
-
-body.light-mode .container, body.light-mode .mycont {
-  background-color: #fafafa;
-  color: black;
-}
-
-/* Dark Mode */
-body.dark-mode {
-  background-color: black;
-  color: white;
-}
-
-body.dark-mode .navbar {
-  background-color: #343a40;
-  color: white;
-}
-
-body.dark-mode .container, body.dark-mode .mycont {
-  background-color: #333;
-  color: white;
-}
-
-body.dark-mode input, body.dark-mode select {
-  background-color: #555;
-  color: white;
-  border: 1px solid #888;
-}
-
-body.dark-mode button {
-  background-color: #6FAAFF;
-  color: white;
-}
-
-body.dark-mode table {
-  background-color: #444;
-  color: white;
-}
-
-body.dark-mode th {
-  background-color: #555;
-}
-
-  
+ #rz-pay{
+  visibility: hidden;
+ }
+  #premium-message{
+    margin: auto;
+    color: black;
+  }
 /* Add padding to avoid content under the navbar */
-body {
-  padding-top: 90px; /* Adjust this according to your navbar height */
-}
+
 
 h1.navbar-brand {
   font-size: 24px;
@@ -77,18 +28,22 @@ h1.navbar-brand {
  
 }
 
+
 .premium-btn {
   font-size: 16px;
   padding: 10px 16px;
-  background-color: #4790f8;
+  background-color: #ffffff;
   margin-right: 10px;
-  color: white;
+  box-shadow: 2px 2px 0 0 black ;
+  color: rgb(0, 0, 0);
   font-weight: 600;
+  font-family: 'Times New Roman', Times, serif;
 }
 .premium-btn:hover{
   background-color: #fdfdfd;
   box-shadow: 2px 2px 0 0 black ;
-  border: 1px solid blue;
+  border: 1px solid rgb(0, 0, 0);
+
 
 }
 
@@ -99,7 +54,10 @@ h1.navbar-brand {
     font-size: 14px;
   padding: 4px 10px;
   margin-top: 10px;
-  background-color: #6FAAFF;
+  box-shadow: 2px 2px 0 0 black ;
+  color: rgb(0, 0, 0);
+  font-weight: 600;
+  font-family: 'Times New Roman', Times, serif;
   }
 
   h1.navbar-brand {
@@ -110,12 +68,16 @@ h1.navbar-brand {
 
 
 
+
+
+
     .mycont {
       background-color: #fafafa;
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 3px 3px 3px rgba(0, 0, 0, 0.328);
       margin-bottom: 20px;
+      margin-top: 50px;
     }
 
     label {
@@ -175,40 +137,32 @@ h1.navbar-brand {
       .mycont {
         display: block;
       }
-      body{
-        padding-top: 100px;
-      }
+     
      
     }
   </style>
 </head>
 
 <body>
-  <div style="margin-bottom: 18px;">
-  <nav class="navbar navbar-expand-lg fixed-top bg-light" style=" box-shadow: 2px 3px 3px 2px rgb(162, 162, 162);">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light" style="background: repeating-linear-gradient(45deg, rgb(144, 194, 238), transparent 210px);">
     <div class="container-fluid">
-      <h1 class="navbar-brand mb-0">Expense Tracker</h1>
-      
-      <!-- Toggle Button for Small Screens -->
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-  
-      <!-- Collapsible Content -->
-      
-      <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
-        <!-- Buy Premium Button (Hidden in small screens) -->
-        <div id="premium-message" class="text-success fw-bold mx-auto d-block text-center my-2 my-lg-0">
-          You are a Premium User! 💎
+       <h2 style="font-family: sans-serif;" ><b>Expense Tracker</b></h2>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav ms-auto"> <!-- Added ms-auto here -->
+              
+             
+               <button id="rz-pay" class="btn premium-btn btn-info">Buy Premium 👑</button>  
+                <button id="logout" class="btn premium-btn btn-info">Logout</button> 
+                <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+               
+            </div>
         </div>
-         
-        <button id="rz-pay" class="btn premium-btn btn-info">Buy Premium 💎</button>
-        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-      </div>
     </div>
-  </nav>
-  
-</div>
+</nav>
+
   
 
   <div class="container">
@@ -243,11 +197,7 @@ h1.navbar-brand {
 
     <div id="error-message" class="text-danger text-center mt-3"></div>
 
-    <div><button id="theme-toggle" onclick="toggleTheme()">
-      <i id="theme-icon" class="bi bi-moon-fill"></i>
-    </button>
     
-    </div>
 
     <div class="list-container">
       <table id="expenseTable" class="table table-striped">
@@ -299,16 +249,30 @@ h1.navbar-brand {
         })
 
     });
+    //parse jwt token
+    function parseJwt (token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+}
 
     function loadexpense() {
         const token = localStorage.getItem('token');
-        console.log(token);
+        const decodeToken = parseJwt(token);
+        const isPremium = decodeToken.isPremiumuser;
+        console.log(isPremium);
+       
+        updatePremiumStatus(isPremium);
   axios.get("http://localhost:3000/expenses/getexpense",{headers:{'Authorization':token}})
     .then((response) => {
       const expenses = response.data.Allexpenses; 
       const isPremium = response.data.isPrimium; 
      
-      updatePremiumStatus(isPremium);
+    
      
           
       const productList = document.getElementById('productlist');
@@ -358,12 +322,18 @@ document.getElementById('rz-pay').onclick = async function(e){
     "handler": async function (response){
   //    console.log( options.order_id);  // Log the order ID
   //    console.log( response.razorpay_payment_id);  // Log the payment ID
-      await axios.post('http://localhost:3000/purchase/updatetransactionstatus',{
+  const updateResponseawait=await axios.post('http://localhost:3000/purchase/updatetransactionstatus',{
         order_id:options.order_id,
         payment_id:response.razorpay_payment_id,
 
       },{headers:{'Authorization':token}});
+      updatePremiumStatus(true);
+
+      console.log("finalCheck"+updateResponseawait.data.token);
+      localStorage.setItem('token',updateResponseawait.data.token);
+
       alert('You are a Primium user now');
+    
     }
   }
   const rzp1 = new Razorpay(options);
@@ -378,41 +348,61 @@ document.getElementById('rz-pay').onclick = async function(e){
 
 }
 
-function updatePremiumStatus(isPremium) {
-    const premiumButton = document.getElementById('rz-pay');
-    const premiumMessage = document.getElementById('premium-message');
 
+
+function updatePremiumStatus(isPremium) {
+    const navbar = document.querySelector('.navbar-nav.ms-auto');
+    const buyPremiumButton = document.getElementById('rz-pay');
+    
+    // Clear any existing dynamic elements
+    const premiumMessage = document.getElementById('premium-message');
+    const reportsLink = document.getElementById('reports');
+    const leaderboardLink = document.getElementById('Leaderboard');
+    
+    if (premiumMessage) premiumMessage.remove();
+    if (reportsLink) reportsLink.remove();
+    if (leaderboardLink) leaderboardLink.remove();
+
+    // Show elements based on premium status
     if (isPremium) {
-        premiumButton.style.display = 'none'; // Hide "Buy Premium" button
-        premiumMessage.classList.remove('d-none'); // Show premium message
+        // Hide the "Buy Premium" button
+        buyPremiumButton.style.visibility = 'hidden';
+
+        // Add the "Premium User" message
+        const premiumMessageDiv = document.createElement('div');
+        premiumMessageDiv.id = 'premium-message';
+        premiumMessageDiv.className = 'text-success fw-bold d-block text-center';
+        premiumMessageDiv.innerHTML = 'You are a Premium User! 💎 &emsp13;&nbsp;&emsp13;&nbsp;';
+        navbar.insertBefore(premiumMessageDiv, buyPremiumButton);
+
+        // Add the "Reports" link
+        const reportsLink = document.createElement('a');
+        reportsLink.id = 'reports';
+        reportsLink.className = 'nav-link active';
+        reportsLink.innerHTML = 'Reports👑';
+        navbar.insertBefore(reportsLink, buyPremiumButton);
+
+        // Add the "Leaderboard" link
+        const leaderboardLink = document.createElement('a');
+        leaderboardLink.id = 'Leaderboard';
+        leaderboardLink.className = 'nav-link';
+        leaderboardLink.innerHTML = '<font style="font-family:\'Lucida Sans\', \'Lucida Sans Regular\', \'Lucida Grande\', \'Lucida Sans Unicode\', Geneva, Verdana, sans-serif, serif;font-weight: 800;font-size: 18px;">LeaderBoard👑</font>';
+        navbar.insertBefore(leaderboardLink, buyPremiumButton);
+
     } else {
-        premiumButton.style.display = 'inline-block'; // Show the button if not premium
-        premiumMessage.classList.add('d-none'); // Hide the premium message
+        // Show the "Buy Premium" button for non-premium users
+        buyPremiumButton.style.visibility = 'visible';
     }
 }
 
 
-
-   //light dark mode......
-   function toggleTheme() {
-  const body = document.body;
-  const icon = document.getElementById('theme-icon');
-
-  if (body.classList.contains('light-mode')) {
-    body.classList.remove('light-mode');
-    body.classList.add('dark-mode');
-    icon.classList.remove('bi-sun-fill');
-    icon.classList.add('bi-moon-fill');
-  } else {
-    body.classList.remove('dark-mode');
-    body.classList.add('light-mode');
-    icon.classList.remove('bi-moon-fill');
-    icon.classList.add('bi-sun-fill');
-  }
-}
  
+//logut button
  
-
+  document.getElementById('logout').addEventListener('click', function() {
+    localStorage.removeItem('token');
+    window.location.href = './login.html'; 
+  });
 
   </script>
 

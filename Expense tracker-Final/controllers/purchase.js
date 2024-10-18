@@ -1,6 +1,7 @@
 const  Razorpay = require('razorpay');
 const Order = require('../models/order');
 const { where } = require('sequelize');
+const userController =require('./users');
 
 
 exports.prchasepremium = async(req,res)=>{
@@ -33,14 +34,14 @@ exports.prchasepremium = async(req,res)=>{
 
 exports.updatetransactionstatus =async (req,res)=>{
     try{
-        console.log("hii coming here ")
+        userId=req.user.id;
         const {payment_id,order_id} = req.body;
         console.log("payid"+payment_id+"orderid"+order_id);
         const order = await Order.findOne({where:{orderid:order_id}});
         const promise1 = order.update({paymentid:payment_id,status:'SUCCESSFUL'})
         const promise2 = req.user.update({isprimiumuser:true});
 Promise.all([promise1,promise2]).then(()=>{
-    return res.status(202).json({success:true,message:"Transaction Successfull"});
+    return res.status(202).json({success:true,message:"Transaction Successfull",token:userController.generateAccessToken(userId,undefined,true)});
 }).catch((error)=>{
     throw new Error(error);
 })

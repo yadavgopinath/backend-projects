@@ -49,8 +49,9 @@ bcrypt.hash(password,saltrounds,async(err,hash)=>{
 
 };
 
-function generateAccessToken(id,name){
-    return jwt.sign({userId:id,name:name},'secretkey');
+exports.generateAccessToken = function(id,name,isPremiumuser){
+   
+    return jwt.sign({userId:id,name:name,isPremiumuser},'secretkey');
 }
 
 
@@ -74,9 +75,9 @@ try{
             if(result==true)
             {
                 
-               
-                return res.status(200).json({message:'Login Successfully',token:generateAccessToken(userPresent.id,userPresent.name)});
-            }else{
+                const token = exports.generateAccessToken(userPresent.id, userPresent.name, userPresent.isprimiumuser);  // Using the same function
+                return res.status(200).json({ message: 'Login Successfully', token: token });
+              }else{
                 return res.status(401).json({error:'Incorrect Password'});
             }
         })

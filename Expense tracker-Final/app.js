@@ -16,10 +16,12 @@ const expenses = require('./models/expenses');
 const order = require('./models/order');
 const { FORCE } = require('sequelize/lib/index-hints');
 const purchaseroutes = require('./routes/purchase');
+const premiumfeaturesroutes =require('./routes/premiumFeature');
 
 app.use('/user',userroutes);
 app.use('/expenses',expensesroutes);
 app.use('/purchase',purchaseroutes);
+app.use('/premium',premiumfeaturesroutes);
 
 Users.hasMany(expenses);
 expenses.belongsTo(Users);
