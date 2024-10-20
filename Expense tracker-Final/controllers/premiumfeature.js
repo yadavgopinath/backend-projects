@@ -4,26 +4,27 @@ const Sequelize = require('sequelize');
 
 const sequalize = require('../util/database');
 
-exports.getUserLeaderBoard = async (req,res,next)=>{
-    try{
+exports.getUserLeaderBoard = async (req, res, next) => {
+    try {
         const leaderBoard = await User.findAll({
-        attributes: [
-            'id',
-            'name',
-            [Sequelize.fn('sum', Sequelize.col('expenses.amount')), 'total_cost'] 
-        ],
-        include: [
-            {
-                model: Expenses, 
-                attributes: []   
-            }
-        ],
-        group: ['users.id'],
-        order: [[Sequelize.fn('sum', Sequelize.col('expenses.amount')), 'DESC']] 
-    });
+            attributes: [
+                'id',
+                'name',
+                'total_expenses' 
+            ],
+            order: [['total_expenses', 'DESC']] 
+        });
 
-    res.status(200).json(leaderBoard); 
-    }catch(err){
-        res.status(501).json(err);
+       
+        const formattedLeaderBoard = leaderBoard.map(user => ({
+            id: user.id,
+            name: user.name,
+            total_cost: user.total_expenses || 0 
+        }));
+
+        res.status(200).json(formattedLeaderBoard);
+    } catch (err) {
+        console.error('Error fetching leaderboard:', err); 
+        res.status(501).json({ message: 'Something went wrong', error: err });
     }
-}
+};

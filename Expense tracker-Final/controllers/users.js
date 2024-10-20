@@ -19,8 +19,7 @@ try{
       const saltrounds=10;
      
 bcrypt.hash(password,saltrounds,async(err,hash)=>{
-    console.log(err);
-    console.log('hello2');
+   
    
     await Users.create({
         name,

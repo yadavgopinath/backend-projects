@@ -23,7 +23,11 @@ const Users=sequelize.define('users',{
         type: Sequelize.STRING,
         allowNull: false
       },
-      isprimiumuser : Sequelize.BOOLEAN
+      isprimiumuser : Sequelize.BOOLEAN,
+      total_expenses: {  // Adding this field
+        type: Sequelize.DOUBLE,
+        defaultValue: 0  // Initial total expenses will be zero
+      }
  
 });
 module.exports=Users;

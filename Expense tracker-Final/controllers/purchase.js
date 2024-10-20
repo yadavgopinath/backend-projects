@@ -14,7 +14,7 @@ exports.prchasepremium = async(req,res)=>{
         const amount = 2500; // Set your amount
         rzp.orders.create({ amount, currency: 'INR' }, async (error, order) => {
             if (error) {
-                console.error("Error creating order:", JSON.stringify(error));
+               
                 return res.status(500).json({ message: 'Failed to create order', error });
             }
 
@@ -36,7 +36,7 @@ exports.updatetransactionstatus =async (req,res)=>{
     try{
         userId=req.user.id;
         const {payment_id,order_id} = req.body;
-        console.log("payid"+payment_id+"orderid"+order_id);
+       
         const order = await Order.findOne({where:{orderid:order_id}});
         const promise1 = order.update({paymentid:payment_id,status:'SUCCESSFUL'})
         const promise2 = req.user.update({isprimiumuser:true});

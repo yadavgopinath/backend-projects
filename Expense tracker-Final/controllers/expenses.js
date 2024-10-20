@@ -1,5 +1,6 @@
-const expenses = require('../models/expenses');
 
+const expenses = require('../models/expenses');
+const users = require('../models/users');
 
 exports.addexpenses = async(req,res,next)=>{
     const {amount,description,category} = req.body;
@@ -17,6 +18,15 @@ exports.addexpenses = async(req,res,next)=>{
             category:category,
             userId:userid
         });
+        const user= await users.findByPk(userid,{
+  attributes:['id','total_expenses']
+        });
+       
+
+      user.total_expenses+=parseFloat(amount);
+      
+        await user.save();
+        console.log(parseFloat(amount));
 
         return res.status(200).json({
             message: 'Expense added successfully!',
@@ -24,6 +34,7 @@ exports.addexpenses = async(req,res,next)=>{
           });
 
     }catch(err){
+        console.log(err);
         res.status(500).json({
             error:err,
             message:'Something went wrong'
@@ -52,14 +63,27 @@ exports.deleteexpenses =  async(req,res,next)=>{
     
  
 try{
-
-    const delexp = await expenses.destroy({where:{id:expid,userId:req.user.id}})
-    if(!delexp){
+ 
+    const exp = await expenses.findOne({where:{id:expid,userId:req.user.id},
+        attributes:['amount','userId','id']
+    });
+   
+    if(!exp){
         return res.status(404).json({ message: 'Expense not found.' });
     }
+ 
+    const user = await users.findByPk(req.user.id,{
+        attributes:['id','total_expenses']
+    })
+    user.total_expenses-=parseFloat(exp.amount);
+   // Directly update the user's total expenses
+   await user.save();
+// Delete the expense
+ await exp.destroy()
     return res.status(200).json({ message: 'Expense deleted successfully.' });
 
 }catch(err){
+    console.group(err);
     return res.status(500).json({
         error:err,
         message: 'Server error, please try again.'
