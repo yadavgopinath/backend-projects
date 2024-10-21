@@ -271,7 +271,7 @@ h3 {
   <div class="container">
     <!-- Show Leaderboard Button -->
     <div id="leaderboard-container" style="display: none; margin-top: 20px;">
-      <h2 class="text-center">Leadership Board</h2>
+      <h2 class="text-center">Leadership Board 🏆</h2>
       <table class="table table-striped">
           <thead>
               <tr>
@@ -430,15 +430,16 @@ function updatePremiumStatus(isPremium) {
     const navbar = document.querySelector('.navbar-nav.ms-auto');
     const buyPremiumButton = document.getElementById('rz-pay');
     
-    // Clear any existing dynamic elements
-    const premiumMessage = document.getElementById('premium-message');
-    const reportsLink = document.getElementById('reports');
-    const leaderboardLink = document.getElementById('Leaderboard');
+    // Remove any existing dynamic elements
+    const existingPremiumMessage = document.getElementById('premium-message');
+    const existingReportsLink = document.getElementById('reports');
+    const existingLeaderboardLink = document.getElementById('Leaderboardmain');
     
-    if (premiumMessage) premiumMessage.remove();
-    if (reportsLink) reportsLink.remove();
-    if (leaderboardLink) leaderboardLink.remove();
-
+    // Remove old elements (if any)
+    if (existingPremiumMessage) existingPremiumMessage.remove();
+    if (existingReportsLink) existingReportsLink.remove();
+    if (existingLeaderboardLink) existingLeaderboardLink.remove();
+    
     // Show elements based on premium status
     if (isPremium) {
         // Hide the "Buy Premium" button
@@ -463,11 +464,11 @@ function updatePremiumStatus(isPremium) {
         const leaderboardLink = document.createElement('a');
         leaderboardLink.id = 'Leaderboardmain';
         leaderboardLink.className = 'nav-link';
-       leaderboardLink.innerHTML = '<font style="font-family:\'Lucida Sans\', \'Lucida Sans Regular\', \'Lucida Grande\', \'Lucida Sans Unicode\', Geneva, Verdana, sans-serif, serif;font-weight: 800;font-size: 18px;">LeaderBoard👑</font>';
-       leaderboardLink.style.cursor = 'pointer'; // Make it look clickable  
-       leaderboardLink.addEventListener('click', function() {
-        showLeaderboard(); // Call your function to show the leaderboard
-    });
+        leaderboardLink.innerHTML = '<font style="font-family:\'Lucida Sans\', \'Lucida Sans Regular\', \'Lucida Grande\', \'Lucida Sans Unicode\', Geneva, Verdana, sans-serif, serif;font-weight: 800;font-size: 18px;">LeaderBoard👑</font>';
+        leaderboardLink.style.cursor = 'pointer'; // Make it look clickable  
+        leaderboardLink.addEventListener('click', function() {
+            showLeaderboard(); // Call your function to show the leaderboard
+        });
         navbar.insertBefore(leaderboardLink, buyPremiumButton);
 
     } else {
@@ -475,6 +476,7 @@ function updatePremiumStatus(isPremium) {
         buyPremiumButton.style.visibility = 'visible';
     }
 }
+
 let leaderboardData = []; // Declare leaderboardData globally
 let itemsPerPage = 1; // Declare itemsPerPage globally
 let currentPage = 1; // Declare currentPage globally
