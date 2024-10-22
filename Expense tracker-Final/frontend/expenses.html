@@ -340,7 +340,7 @@ h3 {
         const token = localStorage.getItem('token');
         const decodeToken = parseJwt(token);
         const isPremium = decodeToken.isPremiumuser;
-        console.log(isPremium);
+       
        
         updatePremiumStatus(isPremium);
   axios.get("http://localhost:3000/expenses/getexpense",{headers:{'Authorization':token}})
