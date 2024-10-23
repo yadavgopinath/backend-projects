@@ -10,7 +10,8 @@
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js" integrity="sha512-JSCFHhKDilTRRXe9ak/FJ28dcpOJxzQaCd3Xg8MyF6XFjODhy/YMCM8HW0TFDckNHWUewW+kfvhin43hKtJxAw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
- 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+
   <style>
    
  #rz-pay{
@@ -292,6 +293,7 @@ h3 {
   
   
 
+
   <script>
      window.addEventListener("DOMContentLoaded",loadexpense);
     document.getElementById('myform').addEventListener('submit',function(e){
@@ -315,6 +317,7 @@ h3 {
     console.log(token);
       axios.post("http://localhost:3000/expenses/addexpenses",formdata,{headers:{'Authorization':token}})
         .then((response)=>{
+         
            loadexpense();
         
          document.getElementById('amount').value = '';
@@ -405,7 +408,7 @@ document.getElementById('rz-pay').onclick = async function(e){
       },{headers:{'Authorization':token}});
       updatePremiumStatus(true);
 
-      console.log("finalCheck"+updateResponseawait.data.token);
+     
       localStorage.setItem('token',updateResponseawait.data.token);
 
       alert('You are a Primium user now');
@@ -458,6 +461,10 @@ function updatePremiumStatus(isPremium) {
         reportsLink.id = 'reports';
         reportsLink.className = 'nav-link active';
         reportsLink.innerHTML = 'Reports👑';
+        reportsLink.style.cursor = 'pointer'; // Make it look clickable  
+        reportsLink.addEventListener('click', function() {
+          downloadExpenseReport(); // Call your function to show the leaderboard
+        });
         navbar.insertBefore(reportsLink, buyPremiumButton);
 
         // Add the "Leaderboard" link
@@ -496,6 +503,8 @@ function showLeaderboard() {
         leaderboardData = response.data; // Get the data directly from the response
         displayLeaderboardPage(currentPage); // Pass current page only
         document.getElementById('leaderboard-container').style.display = 'block';
+        var leaderboardSection = document.getElementById('leaderboard-container');
+        leaderboardSection.scrollIntoView({ behavior: 'smooth' });
     })
     .catch(err => console.error('Error fetching leaderboard:', err));
 }
@@ -540,6 +549,52 @@ document.getElementById('next-page').addEventListener('click', () => {
         displayLeaderboardPage(currentPage);
     }
 });
+//report generation download 
+function downloadExpenseReport() {
+        const token = localStorage.getItem('token');
+        const decodeToken = parseJwt(token);
+        const isPremium = decodeToken.isPremiumuser;
+
+        if (isPremium) {
+            axios.get("http://localhost:3000/expenses/getexpense", { headers: { 'Authorization': token } })
+                .then(function(response) {
+                    if (response.data.success) {
+                        createAndDownloadExcel(response.data.Allexpenses);
+                    } else {
+                        alert('Failed to fetch expenses.');
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Error fetching expenses:', error);
+                });
+        } else {
+            alert('This feature is only available to premium users.');
+        }
+    }
+
+    function createAndDownloadExcel(expenses) {
+        let totalAmount = 0;
+
+        const rows = expenses.map(expense => {
+            totalAmount += expense.amount;
+            return [
+                expense.description,
+                expense.amount,
+                expense.category,
+                new Date(expense.createdAt).toLocaleDateString()
+            ];
+        });
+
+        // Add total row
+        rows.push(['Total', totalAmount, '', '']); // Adding an empty column for the date
+
+        const worksheet = XLSX.utils.aoa_to_sheet([['Description', 'Amount', 'Category', 'Date'], ...rows]);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Expenses');
+
+        // Generate Excel file and trigger download
+        XLSX.writeFile(workbook, 'expenses_report.xlsx');
+    }
 
 
  
