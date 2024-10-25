@@ -192,12 +192,22 @@ h3 {
   border-color: #0056b3;
 }
 
-
+.small-select {
+            width: auto;
+            font-size: 0.9em;
+        }
+        .scrollable-table {
+            overflow-x: auto;
+        }
+        #report-section {
+            display: none;
+            max-width: 100%;
+        }
 </style>
 </head>
 
 <body>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light" style="background: repeating-linear-gradient(45deg, rgb(144, 194, 238), transparent 210px);">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light" style="background: repeating-linear-gradient(45deg, rgb(169, 202, 230), transparent 210px);">
     <div class="container-fluid">
        <h2 style="font-family: sans-serif;" ><b>Expense Tracker</b></h2>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -290,9 +300,51 @@ h3 {
       </div>
       
   </div>
+  </div>
   
-  
+  <div class="container mt-4">
+    <div id="report-section" class="p-4 border rounded shadow">
+        <h2 class="mb-3">Expense Report</h2>
+        
+        <div class="mb-3">
+            <label for="month-select" class="form-label">Select Month:</label>
+            <select id="month-select" class="form-select small-select">
+                <option value="jan">January</option>
+                <option value="feb">February</option>
+                <option value="mar">March</option>
+                <option value="apr">April</option>
+                <option value="may">May</option>
+                <option value="jun">June</option>
+                <option value="jul">July</option>
+                <option value="aug">August</option>
+                <option value="sep">September</option>
+                <option value="oct">October</option>
+                <option value="nov">November</option>
+                <option value="dec">December</option>
+            </select>
+        </div>
 
+        <!-- Table to display expenses -->
+        <div id="expense-table-container" class="scrollable-table">
+            <table id="expense-table" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Expense Name</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Total Amount Display and No Data Message -->
+        <div id="total-amount" class="fw-bold mt-3"></div>
+        <div id="no-data-message" class="text-danger mt-3" style="display: none;"></div>
+        <button id="download-expenses" class="btn btn-primary mt-3">Download Expenses as CSV</button>
+    </div>
+</div>
 
   <script>
      window.addEventListener("DOMContentLoaded",loadexpense);
@@ -463,7 +515,9 @@ function updatePremiumStatus(isPremium) {
         reportsLink.innerHTML = 'Reports👑';
         reportsLink.style.cursor = 'pointer'; // Make it look clickable  
         reportsLink.addEventListener('click', function() {
-          downloadExpenseReport(); // Call your function to show the leaderboard
+          document.getElementById('report-section').style.display = 'block';
+        document.getElementById('report-section').scrollIntoView({ behavior: 'smooth' });
+        fetchAllExpenses();
         });
         navbar.insertBefore(reportsLink, buyPremiumButton);
 
@@ -472,14 +526,14 @@ function updatePremiumStatus(isPremium) {
         leaderboardLink.id = 'Leaderboardmain';
         leaderboardLink.className = 'nav-link';
         leaderboardLink.innerHTML = '<font style="font-family:\'Lucida Sans\', \'Lucida Sans Regular\', \'Lucida Grande\', \'Lucida Sans Unicode\', Geneva, Verdana, sans-serif, serif;font-weight: 800;font-size: 18px;">LeaderBoard👑</font>';
-        leaderboardLink.style.cursor = 'pointer'; // Make it look clickable  
+        leaderboardLink.style.cursor = 'pointer'; 
         leaderboardLink.addEventListener('click', function() {
-            showLeaderboard(); // Call your function to show the leaderboard
+            showLeaderboard(); 
         });
         navbar.insertBefore(leaderboardLink, buyPremiumButton);
 
     } else {
-        // Show the "Buy Premium" button for non-premium users
+        
         buyPremiumButton.style.visibility = 'visible';
     }
 }
@@ -549,55 +603,98 @@ document.getElementById('next-page').addEventListener('click', () => {
         displayLeaderboardPage(currentPage);
     }
 });
-//report generation download 
-function downloadExpenseReport() {
-        const token = localStorage.getItem('token');
-        const decodeToken = parseJwt(token);
-        const isPremium = decodeToken.isPremiumuser;
+//report one 
+let allExpenses = {};
+let monthlyExpenses = {};
+document.getElementById('month-select').addEventListener('change', function () {
+        const selectedMonth = this.value;
+        displayExpenses(monthlyExpenses[selectedMonth]);
+    });
 
-        if (isPremium) {
-            axios.get("http://localhost:3000/expenses/getexpense", { headers: { 'Authorization': token } })
-                .then(function(response) {
-                    if (response.data.success) {
-                        createAndDownloadExcel(response.data.Allexpenses);
-                    } else {
-                        alert('Failed to fetch expenses.');
-                    }
-                })
-                .catch(function(error) {
-                    console.error('Error fetching expenses:', error);
-                });
-        } else {
-            alert('This feature is only available to premium users.');
+    function fetchAllExpenses() {
+        const token = localStorage.getItem('token');
+        axios.get('http://localhost:3000/expenses/getexpense', { headers: { 'Authorization': token } })
+            .then(response => {
+                if (response.data.success) {
+                    allExpenses = response.data.Allexpenses;
+                    organizeExpensesByMonth(allExpenses);
+                    setDefaultMonth();
+                }
+            })
+            .catch(error => console.error('Error fetching expenses:', error));
+    }
+
+    function organizeExpensesByMonth(expenses) {
+        monthlyExpenses = {};
+        for (const expenseId in expenses) {
+            const expense = expenses[expenseId];
+            const month = new Date(expense.createdAt).toLocaleString('en-US', { month: 'short' }).toLowerCase();
+            if (!monthlyExpenses[month]) {
+                monthlyExpenses[month] = [];
+            }
+            monthlyExpenses[month].push(expense);
         }
     }
 
-    function createAndDownloadExcel(expenses) {
-        let totalAmount = 0;
-
-        const rows = expenses.map(expense => {
-            totalAmount += expense.amount;
-            return [
-                expense.description,
-                expense.amount,
-                expense.category,
-                new Date(expense.createdAt).toLocaleDateString()
-            ];
-        });
-
-        // Add total row
-        rows.push(['Total', totalAmount, '', '']); // Adding an empty column for the date
-
-        const worksheet = XLSX.utils.aoa_to_sheet([['Description', 'Amount', 'Category', 'Date'], ...rows]);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Expenses');
-
-        // Generate Excel file and trigger download
-        XLSX.writeFile(workbook, 'expenses_report.xlsx');
+    function setDefaultMonth() {
+        const currentMonth = new Date().toLocaleString('en-US', { month: 'short' }).toLowerCase();
+        document.getElementById('month-select').value = currentMonth;
+        displayExpenses(monthlyExpenses[currentMonth]);
     }
 
+    function displayExpenses(expenses) {
+        const tbody = document.getElementById('expense-table').querySelector('tbody');
+        tbody.innerHTML = ''; // Clear previous data
+        let totalAmount = 0;
+        
+        if (expenses && expenses.length > 0) {
+            document.getElementById('no-data-message').style.display = 'none';
+            expenses.forEach(expense => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${new Date(expense.createdAt).toLocaleDateString()}</td>
+                    <td>${expense.category}</td>
+                    <td>${expense.description}</td>
+                    <td>${expense.amount.toFixed(2)}</td>
+                `;
+                tbody.appendChild(row);
+                totalAmount += expense.amount;
+            });
+            document.getElementById('total-amount').innerHTML = `Total Amount: ${totalAmount.toFixed(2)}`;
+        } else {
+            showNoDataMessage('Sorry, no expenses found for this month.');
+        }
+    }
 
- 
+    function showNoDataMessage(message) {
+        document.getElementById('expense-table').querySelector('tbody').innerHTML = '';
+        document.getElementById('total-amount').innerHTML = '';
+        const noDataMessage = document.getElementById('no-data-message');
+        noDataMessage.textContent = message;
+        noDataMessage.style.display = 'block';
+    }
+
+    function downloadExpenses(expenses) {
+        const csvContent = 'data:text/csv;charset=utf-8,Date,Category,Description,Amount\n' + 
+            expenses.map(expense => `${new Date(expense.createdAt).toLocaleDateString()},${expense.category},${expense.description},${expense.amount}`).join('\n');
+        
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', 'expenses_report.csv');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    document.getElementById('download-expenses').onclick = function () {
+        const selectedMonth = document.getElementById('month-select').value;
+        const expensesToDownload = monthlyExpenses[selectedMonth];
+        downloadExpenses(expensesToDownload);
+    };
+
+
+
 //logut button
  
   document.getElementById('logout').addEventListener('click', function() {
