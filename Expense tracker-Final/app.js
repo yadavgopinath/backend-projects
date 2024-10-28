@@ -16,6 +16,7 @@ const expensesroutes = require('./routes/expenses');
 const Users = require('./models/users');
 const expenses = require('./models/expenses');
 const order = require('./models/order');
+const download=require('./models/download');
 const { FORCE } = require('sequelize/lib/index-hints');
 const purchaseroutes = require('./routes/purchase');
 const premiumfeaturesroutes =require('./routes/premiumFeature');
@@ -35,6 +36,8 @@ Users.hasMany(order);
 order.belongsTo(Users);
 Users.hasMany(ForgotPasswordRequests, { onDelete: 'CASCADE' }); 
 ForgotPasswordRequests.belongsTo(Users); 
+Users.hasMany(download);
+download.belongsTo(Users);
 
 sequelize.sync()
   .then((result) => {

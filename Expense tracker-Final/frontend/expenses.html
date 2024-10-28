@@ -342,8 +342,17 @@ h3 {
         <!-- Total Amount Display and No Data Message -->
         <div id="total-amount" class="fw-bold mt-3"></div>
         <div id="no-data-message" class="text-danger mt-3" style="display: none;"></div>
-        <button id="download-expenses" class="btn btn-primary mt-3">Download Expenses as CSV</button>
+        <button id="download-expenses" class="btn btn-primary mt-3" >
+          <span id="download-spinner" class="spinner-border spinner-border-sm me-2" role="status" style="display: none;"></span>
+          Download Expenses as CSV
+      </button>
+      <div id="recent-downloads" class="mt-4">
+       
+        <ul id="download-list" class="list-unstyled"></ul>
+        <div id="no-downloads-message" class="text-danger" style="display: none;"></div>
     </div>
+    </div>
+  
 </div>
 
   <script>
@@ -518,6 +527,7 @@ function updatePremiumStatus(isPremium) {
           document.getElementById('report-section').style.display = 'block';
         document.getElementById('report-section').scrollIntoView({ behavior: 'smooth' });
         fetchAllExpenses();
+        fetchRecentDownloads();
         });
         navbar.insertBefore(reportsLink, buyPremiumButton);
 
@@ -674,24 +684,71 @@ document.getElementById('month-select').addEventListener('change', function () {
         noDataMessage.style.display = 'block';
     }
 
-    function downloadExpenses(expenses) {
-        const csvContent = 'data:text/csv;charset=utf-8,Date,Category,Description,Amount\n' + 
-            expenses.map(expense => `${new Date(expense.createdAt).toLocaleDateString()},${expense.category},${expense.description},${expense.amount}`).join('\n');
-        
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement('a');
-        link.setAttribute('href', encodedUri);
-        link.setAttribute('download', 'expenses_report.csv');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    function downloadExpenses() {
+      const token = localStorage.getItem('token');
+    const downloadButton = document.getElementById('download-expenses');
+    const spinner = document.getElementById('download-spinner');
+    
+    downloadButton.disabled = true;
+    spinner.style.display = 'inline-block';
+
+    axios.get("http://localhost:3000/expenses/download", { headers: { 'Authorization': token } })
+        .then((response) => {
+            if (response.status === 200) {
+                var a = document.createElement('a');
+                a.href = response.data.fileURL;
+                a.download = 'myexpense.csv';
+                a.click();
+               
+            }
+        })
+        .catch((error) => {
+            console.error('Error Downloading expenses:', error);
+        })
+        .finally(() => {
+            downloadButton.disabled = false;
+            spinner.style.display = 'none';
+        });
     }
+    
 
     document.getElementById('download-expenses').onclick = function () {
-        const selectedMonth = document.getElementById('month-select').value;
-        const expensesToDownload = monthlyExpenses[selectedMonth];
-        downloadExpenses(expensesToDownload);
+       
+        downloadExpenses();
     };
+    //previous downloads links
+    function fetchRecentDownloads() {
+    const token = localStorage.getItem('token');
+    const recentDownloadsContainer = document.getElementById('recent-downloads');
+    
+    axios.get("http://localhost:3000/expenses/previousdownloads", { headers: { 'Authorization': token } })
+        .then(response => {
+            recentDownloadsContainer.innerHTML = ''; 
+
+            if (response.data.success && response.data.downloads.length > 0) {
+             
+                const header = document.createElement('h5');
+                header.textContent = 'Recent Downloads';
+                recentDownloadsContainer.appendChild(header);
+
+               
+                const downloadList = document.createElement('ul');
+                downloadList.classList.add('list-unstyled');
+
+                response.data.downloads.slice(0, 5).forEach(download => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `<a href="${download.fileURL}" target="_self">Download on ${new Date(download.createdAt).toLocaleDateString()}</a>`;
+                    downloadList.appendChild(listItem);
+                });
+
+              
+                recentDownloadsContainer.appendChild(downloadList);
+            } 
+           
+        })
+        .catch(error => console.error('Error fetching recent downloads:', error));
+}
+
 
 
 

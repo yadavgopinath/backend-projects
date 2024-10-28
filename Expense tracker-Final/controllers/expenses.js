@@ -1,7 +1,12 @@
 
+const { Body } = require('sib-api-v3-sdk');
 const expenses = require('../models/expenses');
 const users = require('../models/users');
 const sequalize = require('../util/database');
+const Download = require('../models/download');
+
+const UserExpenses=require('../services/userservices');
+const S3service = require('../services/S3services');
 
 exports.addexpenses = async(req,res,next)=>{
     const t = await sequalize.transaction();
@@ -48,6 +53,7 @@ exports.addexpenses = async(req,res,next)=>{
 }
 
 exports.getexpenses = async(req,res,next)=>{
+    console.log('hi');
     try{
         
      const Allexpenses=  await expenses.findAll({where:{userid:req.user.id}});
@@ -96,6 +102,59 @@ try{
         error:err,
         message: 'Server error, please try again.'
     })
+}
+
+}
+
+
+//download expense
+
+ 
+
+exports.downloadexpenses = async(req,res)=>{
+    try{
+        const expenses = await UserExpenses.getExpenses(req);
+    
+   
+        const stringifiedExpenses = JSON.stringify(expenses);
+        const userId=req.user.id;
+        const filename = `Expenses${userId}/${new Date()}.txt`;
+        const fileURL = await S3service.uploadToS3(stringifiedExpenses,filename);
+        console.log(fileURL);
+        
+        await Download.create({
+            userId: userId,
+            fileURL: fileURL
+          });
+        res.status(200).json({fileURL,message:'success'}); 
+
+    }catch(err)
+    {
+        console.log(err);
+        res.status(500).json({fileURL:'',success:false,err})
+    }
+    
+   
+
+}
+
+exports.previousdownloads = async(req,res,next)=>{
+    try{
+    const userId=req.user.id;
+    const recentDownloads = await Download.findAll({
+        where: { userId },
+        order: [['createdAt', 'DESC']],
+        limit: 5
+    });
+
+
+    res.status(200).json({
+        success: true,
+        downloads: recentDownloads
+    });
+}catch(err){
+    console.error("Error fetching last five downloads:", err);
+    res.status(500).json({message:'Error fetching last five downloads:',err}); 
 }
 
 }
