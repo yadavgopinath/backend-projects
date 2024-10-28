@@ -22,6 +22,11 @@ const Users=sequelize.define('users',{
       password: {
         type: Sequelize.STRING,
         allowNull: false
+      },
+      isprimiumuser : Sequelize.BOOLEAN,
+      total_expenses: {  // Adding this field
+        type: Sequelize.DOUBLE,
+        defaultValue: 0  // Initial total expenses will be zero
       }
  
 });

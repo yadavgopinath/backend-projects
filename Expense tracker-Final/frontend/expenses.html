@@ -5,31 +5,81 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Expense Tracker</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js" integrity="sha512-JSCFHhKDilTRRXe9ak/FJ28dcpOJxzQaCd3Xg8MyF6XFjODhy/YMCM8HW0TFDckNHWUewW+kfvhin43hKtJxAw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
- 
-  <style>
-    body {
-      background-color: #f4f4f4;
-      font-family: 'Poppins', sans-serif;
-    }
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 
-    h1 {
-      text-align: center;
-      background-color: #47a4f6;
-      padding: 20px;
-      color: white;
-      font-size: 28px;
-      margin-bottom: 30px;
-    }
+  <style>
+   
+ #rz-pay{
+  visibility: hidden;
+ }
+  #premium-message{
+    margin: auto;
+    color: black;
+  }
+/* Add padding to avoid content under the navbar */
+
+
+h1.navbar-brand {
+  font-size: 24px;
+  font-weight: 600;
+ 
+}
+
+
+.premium-btn {
+  font-size: 16px;
+  padding: 10px 16px;
+  background-color: #ffffff;
+  margin-right: 10px;
+  box-shadow: 2px 2px 0 0 black ;
+  color: rgb(0, 0, 0);
+  font-weight: 600;
+  font-family: 'Times New Roman', Times, serif;
+}
+.premium-btn:hover{
+  background-color: #fdfdfd;
+  box-shadow: 2px 2px 0 0 black ;
+  border: 1px solid rgb(0, 0, 0);
+
+
+}
+
+/* Media Query to hide the "Buy Premium" button in small screens */
+@media (max-width: 500px) {
+ 
+  .premium-btn {
+    font-size: 14px;
+  padding: 4px 10px;
+  margin-top: 10px;
+  box-shadow: 2px 2px 0 0 black ;
+  color: rgb(0, 0, 0);
+  font-weight: 600;
+  font-family: 'Times New Roman', Times, serif;
+  }
+
+  h1.navbar-brand {
+    font-size: 20px;
+  }
+}
+
+
+
+
+
+
 
     .mycont {
-      background-color: #fff;
+      background-color: #fafafa;
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 3px 3px 3px rgba(0, 0, 0, 0.328);
       margin-bottom: 20px;
+      margin-top: 50px;
     }
 
     label {
@@ -47,7 +97,7 @@
 
     button {
       padding: 12px 30px;
-      background-color: #17a2b8;
+      background-color: #6FAAFF;
       color: white;
       border: none;
       border-radius: 5px;
@@ -89,12 +139,94 @@
       .mycont {
         display: block;
       }
+     
+     
     }
-  </style>
+    /*leaderBoard css*/
+    #leaderboard-container {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.pagination-controls button {
+  margin: 5px;
+}
+
+h3 {
+  font-family: sans-serif;
+}
+
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+#prev-page, #next-page {
+  margin: 0 10px;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+#page-info {
+  font-family: 'Lucida Sans', sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  color: #141415; /* Bootstrap primary blue */
+  margin: 0 15px;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.small-select {
+            width: auto;
+            font-size: 0.9em;
+        }
+        .scrollable-table {
+            overflow-x: auto;
+        }
+        #report-section {
+            display: none;
+            max-width: 100%;
+        }
+</style>
 </head>
 
 <body>
-  <h1>Expense Tracker</h1>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light" style="background: repeating-linear-gradient(45deg, rgb(169, 202, 230), transparent 210px);">
+    <div class="container-fluid">
+       <h2 style="font-family: sans-serif;" ><b>Expense Tracker</b></h2>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav ms-auto"> <!-- Added ms-auto here -->
+              
+             
+               <button id="rz-pay" class="btn premium-btn btn-info">Buy Premium 👑</button>  
+                <button id="logout" class="btn premium-btn btn-info">Logout</button> 
+                <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+               
+            </div>
+        </div>
+    </div>
+</nav>
+
+  
 
   <div class="container">
     <form id="myform">
@@ -117,15 +249,18 @@
             <option value="Food and Drink">Food and Drink</option>
             <option value="Personal Care">Personal Care</option>
             <option value="Taxes">Taxes</option>
+            <option value="Taxes">Others</option>
           </select>
         </div>
       </div>
       <div class="text-center">
-        <button type="submit" class="btn btn-info btn-lg">Submit</button>
+        <button type="submit" class="btn btn-info btn-lg" style="background-color: #4165f6;color: #ffffff;font-weight: 600;height: 44px;margin: auto;width: 160px;">Submit</button>
       </div>
     </form>
 
     <div id="error-message" class="text-danger text-center mt-3"></div>
+
+    
 
     <div class="list-container">
       <table id="expenseTable" class="table table-striped">
@@ -143,6 +278,73 @@
       </table>
     </div>
   </div>
+
+  <div class="container">
+    <!-- Show Leaderboard Button -->
+    <div id="leaderboard-container" style="display: none; margin-top: 20px;">
+      <h2 class="text-center">Leadership Board 🏆</h2>
+      <table class="table table-striped">
+          <thead>
+              <tr>
+                  <th>Position</th>
+                  <th>Name</th>
+                  <th>Expenses</th>
+              </tr>
+          </thead>
+          <tbody id="leaderboard-body"></tbody>
+      </table>
+      <div class="pagination">
+        <button id="prev-page" class="btn btn-primary">Previous</button>
+        <span id="page-info" class="page-info"></span>
+        <button id="next-page" class="btn btn-primary">Next</button>
+      </div>
+      
+  </div>
+  </div>
+  
+  <div class="container mt-4">
+    <div id="report-section" class="p-4 border rounded shadow">
+        <h2 class="mb-3">Expense Report</h2>
+        
+        <div class="mb-3">
+            <label for="month-select" class="form-label">Select Month:</label>
+            <select id="month-select" class="form-select small-select">
+                <option value="jan">January</option>
+                <option value="feb">February</option>
+                <option value="mar">March</option>
+                <option value="apr">April</option>
+                <option value="may">May</option>
+                <option value="jun">June</option>
+                <option value="jul">July</option>
+                <option value="aug">August</option>
+                <option value="sep">September</option>
+                <option value="oct">October</option>
+                <option value="nov">November</option>
+                <option value="dec">December</option>
+            </select>
+        </div>
+
+        <!-- Table to display expenses -->
+        <div id="expense-table-container" class="scrollable-table">
+            <table id="expense-table" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Expense Name</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Total Amount Display and No Data Message -->
+        <div id="total-amount" class="fw-bold mt-3"></div>
+        <div id="no-data-message" class="text-danger mt-3" style="display: none;"></div>
+        <button id="download-expenses" class="btn btn-primary mt-3">Download Expenses as CSV</button>
+    </div>
+</div>
 
   <script>
      window.addEventListener("DOMContentLoaded",loadexpense);
@@ -167,6 +369,7 @@
     console.log(token);
       axios.post("http://localhost:3000/expenses/addexpenses",formdata,{headers:{'Authorization':token}})
         .then((response)=>{
+         
            loadexpense();
         
          document.getElementById('amount').value = '';
@@ -177,14 +380,32 @@
         })
 
     });
+    //parse jwt token
+    function parseJwt (token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+}
 
     function loadexpense() {
         const token = localStorage.getItem('token');
-        console.log(token);
+        const decodeToken = parseJwt(token);
+        const isPremium = decodeToken.isPremiumuser;
+       
+       
+        updatePremiumStatus(isPremium);
   axios.get("http://localhost:3000/expenses/getexpense",{headers:{'Authorization':token}})
     .then((response) => {
       const expenses = response.data.Allexpenses; 
-      console.log(expenses);
+      const isPremium = response.data.isPrimium; 
+     
+    
+     
+          
       const productList = document.getElementById('productlist');
       productList.innerHTML = ''; 
 
@@ -221,9 +442,265 @@ function deleteExpense(id) {
       console.error('Error deleting expense:', error);
     });
 }
+//Razor-pay Integration
+document.getElementById('rz-pay').onclick = async function(e){
+  const token =localStorage.getItem('token');
+  const response = await axios.get('http://localhost:3000/purchase/premiummembership',{headers:{'Authorization':token}});
+  //console.log(response);
+  var options = {
+    "key":response.data.key_id,
+   "order_id": response.data.order.id,
+    "handler": async function (response){
+  //    console.log( options.order_id);  // Log the order ID
+  //    console.log( response.razorpay_payment_id);  // Log the payment ID
+  const updateResponseawait=await axios.post('http://localhost:3000/purchase/updatetransactionstatus',{
+        order_id:options.order_id,
+        payment_id:response.razorpay_payment_id,
 
+      },{headers:{'Authorization':token}});
+      updatePremiumStatus(true);
+
+     
+      localStorage.setItem('token',updateResponseawait.data.token);
+
+      alert('You are a Primium user now');
     
+    }
+  }
+  const rzp1 = new Razorpay(options);
+  rzp1.open();
+  e.preventDefault();
 
+  rzp1.on('payment.failed',function(response){
+  //  console.log(response);
+    alert('somenthing Went Wrong');
+  })
+
+
+}
+
+
+
+function updatePremiumStatus(isPremium) {
+    const navbar = document.querySelector('.navbar-nav.ms-auto');
+    const buyPremiumButton = document.getElementById('rz-pay');
+    
+    // Remove any existing dynamic elements
+    const existingPremiumMessage = document.getElementById('premium-message');
+    const existingReportsLink = document.getElementById('reports');
+    const existingLeaderboardLink = document.getElementById('Leaderboardmain');
+    
+    // Remove old elements (if any)
+    if (existingPremiumMessage) existingPremiumMessage.remove();
+    if (existingReportsLink) existingReportsLink.remove();
+    if (existingLeaderboardLink) existingLeaderboardLink.remove();
+    
+    // Show elements based on premium status
+    if (isPremium) {
+        // Hide the "Buy Premium" button
+        buyPremiumButton.style.visibility = 'hidden';
+
+        // Add the "Premium User" message
+        const premiumMessageDiv = document.createElement('div');
+        premiumMessageDiv.id = 'premium-message';
+        premiumMessageDiv.className = 'text-success fw-bold d-block text-center';
+        premiumMessageDiv.innerHTML = 'You are a Premium User! 💎 &emsp13;&nbsp;&emsp13;&nbsp;';
+        
+        navbar.insertBefore(premiumMessageDiv, buyPremiumButton);
+
+        // Add the "Reports" link
+        const reportsLink = document.createElement('a');
+        reportsLink.id = 'reports';
+        reportsLink.className = 'nav-link active';
+        reportsLink.innerHTML = 'Reports👑';
+        reportsLink.style.cursor = 'pointer'; // Make it look clickable  
+        reportsLink.addEventListener('click', function() {
+          document.getElementById('report-section').style.display = 'block';
+        document.getElementById('report-section').scrollIntoView({ behavior: 'smooth' });
+        fetchAllExpenses();
+        });
+        navbar.insertBefore(reportsLink, buyPremiumButton);
+
+        // Add the "Leaderboard" link
+        const leaderboardLink = document.createElement('a');
+        leaderboardLink.id = 'Leaderboardmain';
+        leaderboardLink.className = 'nav-link';
+        leaderboardLink.innerHTML = '<font style="font-family:\'Lucida Sans\', \'Lucida Sans Regular\', \'Lucida Grande\', \'Lucida Sans Unicode\', Geneva, Verdana, sans-serif, serif;font-weight: 800;font-size: 18px;">LeaderBoard👑</font>';
+        leaderboardLink.style.cursor = 'pointer'; 
+        leaderboardLink.addEventListener('click', function() {
+            showLeaderboard(); 
+        });
+        navbar.insertBefore(leaderboardLink, buyPremiumButton);
+
+    } else {
+        
+        buyPremiumButton.style.visibility = 'visible';
+    }
+}
+
+let leaderboardData = []; // Declare leaderboardData globally
+let itemsPerPage = 1; // Declare itemsPerPage globally
+let currentPage = 1; // Declare currentPage globally
+
+//leaderBoard logic//////////////////////////////////////////////////////////////////////
+// Function to show leaderboard
+// Function to show leaderboard
+function showLeaderboard() {
+    currentPage = 1; // Reset current page when showing leaderboard
+    // Fetch leaderboard data from backend
+    const token = localStorage.getItem('token');
+    
+    axios.get('http://localhost:3000/premium/showLeaderBoard', {
+        headers: { 'Authorization': token }
+    })
+    .then(response => {
+        leaderboardData = response.data; // Get the data directly from the response
+        displayLeaderboardPage(currentPage); // Pass current page only
+        document.getElementById('leaderboard-container').style.display = 'block';
+        var leaderboardSection = document.getElementById('leaderboard-container');
+        leaderboardSection.scrollIntoView({ behavior: 'smooth' });
+    })
+    .catch(err => console.error('Error fetching leaderboard:', err));
+}
+
+// Function to display leaderboard based on current page
+function displayLeaderboardPage(page) {
+    const leaderboardBody = document.getElementById('leaderboard-body');
+    leaderboardBody.innerHTML = ''; // Clear previous entries
+
+    const startIndex = (page - 1) * itemsPerPage;
+    const endIndex = page * itemsPerPage;
+    const currentItems = leaderboardData.slice(startIndex, endIndex);
+
+    currentItems.forEach((user, index) => {
+        const row = `
+            <tr>
+                <td>${startIndex + index + 1}</td>
+                <td>${user.name}</td>
+                <td>${user.total_cost}</td>
+            </tr>
+        `;
+        leaderboardBody.innerHTML += row;
+    });
+
+    // Update pagination controls
+    document.getElementById('page-info').textContent = `Page ${page}`;
+    document.getElementById('prev-page').disabled = (page === 1);
+    document.getElementById('next-page').disabled = (endIndex >= leaderboardData.length);
+}
+
+// Pagination controls
+document.getElementById('prev-page').addEventListener('click', () => {
+    if (currentPage > 1) {
+        currentPage--;
+        displayLeaderboardPage(currentPage);
+    }
+});
+
+document.getElementById('next-page').addEventListener('click', () => {
+    if ((currentPage * itemsPerPage) < leaderboardData.length) {
+        currentPage++;
+        displayLeaderboardPage(currentPage);
+    }
+});
+//report one 
+let allExpenses = {};
+let monthlyExpenses = {};
+document.getElementById('month-select').addEventListener('change', function () {
+        const selectedMonth = this.value;
+        displayExpenses(monthlyExpenses[selectedMonth]);
+    });
+
+    function fetchAllExpenses() {
+        const token = localStorage.getItem('token');
+        axios.get('http://localhost:3000/expenses/getexpense', { headers: { 'Authorization': token } })
+            .then(response => {
+                if (response.data.success) {
+                    allExpenses = response.data.Allexpenses;
+                    organizeExpensesByMonth(allExpenses);
+                    setDefaultMonth();
+                }
+            })
+            .catch(error => console.error('Error fetching expenses:', error));
+    }
+
+    function organizeExpensesByMonth(expenses) {
+        monthlyExpenses = {};
+        for (const expenseId in expenses) {
+            const expense = expenses[expenseId];
+            const month = new Date(expense.createdAt).toLocaleString('en-US', { month: 'short' }).toLowerCase();
+            if (!monthlyExpenses[month]) {
+                monthlyExpenses[month] = [];
+            }
+            monthlyExpenses[month].push(expense);
+        }
+    }
+
+    function setDefaultMonth() {
+        const currentMonth = new Date().toLocaleString('en-US', { month: 'short' }).toLowerCase();
+        document.getElementById('month-select').value = currentMonth;
+        displayExpenses(monthlyExpenses[currentMonth]);
+    }
+
+    function displayExpenses(expenses) {
+        const tbody = document.getElementById('expense-table').querySelector('tbody');
+        tbody.innerHTML = ''; // Clear previous data
+        let totalAmount = 0;
+        
+        if (expenses && expenses.length > 0) {
+            document.getElementById('no-data-message').style.display = 'none';
+            expenses.forEach(expense => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${new Date(expense.createdAt).toLocaleDateString()}</td>
+                    <td>${expense.category}</td>
+                    <td>${expense.description}</td>
+                    <td>${expense.amount.toFixed(2)}</td>
+                `;
+                tbody.appendChild(row);
+                totalAmount += expense.amount;
+            });
+            document.getElementById('total-amount').innerHTML = `Total Amount: ${totalAmount.toFixed(2)}`;
+        } else {
+            showNoDataMessage('Sorry, no expenses found for this month.');
+        }
+    }
+
+    function showNoDataMessage(message) {
+        document.getElementById('expense-table').querySelector('tbody').innerHTML = '';
+        document.getElementById('total-amount').innerHTML = '';
+        const noDataMessage = document.getElementById('no-data-message');
+        noDataMessage.textContent = message;
+        noDataMessage.style.display = 'block';
+    }
+
+    function downloadExpenses(expenses) {
+        const csvContent = 'data:text/csv;charset=utf-8,Date,Category,Description,Amount\n' + 
+            expenses.map(expense => `${new Date(expense.createdAt).toLocaleDateString()},${expense.category},${expense.description},${expense.amount}`).join('\n');
+        
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', 'expenses_report.csv');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    document.getElementById('download-expenses').onclick = function () {
+        const selectedMonth = document.getElementById('month-select').value;
+        const expensesToDownload = monthlyExpenses[selectedMonth];
+        downloadExpenses(expensesToDownload);
+    };
+
+
+
+//logut button
+ 
+  document.getElementById('logout').addEventListener('click', function() {
+    localStorage.removeItem('token');
+    window.location.href = './login.html'; 
+  });
 
   </script>
 
