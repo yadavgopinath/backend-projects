@@ -13,14 +13,23 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 
   <style>
+    body{
+      background-color: aliceblue;
+    }
    
  #rz-pay{
   visibility: hidden;
  }
   #premium-message{
     margin: auto;
-    color: black;
+    color: rgba(0, 0, 0, 0.854) !important;
+    font-family: sans-serif;
+    font-weight: 700;
   }
+
+
+  /*for expense list*/
+  
 /* Add padding to avoid content under the navbar */
 
 
@@ -74,10 +83,10 @@ h1.navbar-brand {
 
 
     .mycont {
-      background-color: #fafafa;
+      background-color:rgb(169, 202, 230);
       padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 3px 3px 3px rgba(0, 0, 0, 0.328);
+      border-radius: 20px;
+      box-shadow: 0 3px 3px 3px  rgba(0, 0, 0, 0.328);
       margin-bottom: 20px;
       margin-top: 50px;
     }
@@ -93,11 +102,12 @@ h1.navbar-brand {
       width: 100%;
       border: 1px solid #ddd;
       border-radius: 5px;
+      background-color: aliceblue !important;
     }
 
     button {
       padding: 12px 30px;
-      background-color: #6FAAFF;
+      background-color: #8db0e1;
       color: white;
       border: none;
       border-radius: 5px;
@@ -110,16 +120,89 @@ h1.navbar-brand {
       background-color: #138496;
     }
 
-    .list-container {
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      margin-top: 20px;
-      overflow-x: auto;
-    }
+   /* Style for the list container and table */
+/* List container styling */
+.list-container {
+ 
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  overflow: hidden;
+  background-color: rgb(169, 202, 230);
+}
 
-    table {
+/* Table styling */
+#expenseTable {
+  width: 100%;
+ 
+  table-layout: auto; /* Allows flexible column widths */
+
+}
+
+#expenseTable th, #expenseTable td {
+  padding: 12px;
+  text-align: left;
+  vertical-align: middle;
+  font-size: 16px;
+  word-wrap: break-word; /* Allows text to wrap within cells */
+  background-color: rgb(215 235 251);
+}
+
+/* Set a flexible width for the description to prevent overflow */
+#expenseTable td.description {
+  max-width: 60%; /* Allows description to wrap */
+  white-space: normal; /* Enables wrapping for long text */
+}
+
+#expenseTable th {
+  background-color: rgb(215 235 251);
+  font-weight: bold;
+}
+
+/* Action column styling to keep buttons visible */
+#expenseTable td.actions {
+  width: 80px; /* Adjust as necessary to fit buttons */
+  text-align: center;
+}
+
+/* Responsive adjustments for mobile view */
+@media (max-width: 768px) {
+  .list-container {
+    padding: 8px;
+  }
+
+  #expenseTable th, #expenseTable td {
+    padding: 6px;
+    font-size: 12px;
+    background-color: rgb(215 235 251);
+  }
+
+  #expenseTable td.description {
+    max-width: 100%; /* Expand description to full width on mobile */
+  }
+}
+@media (max-width: 300px) {
+  .list-container {
+    padding: 5px;
+  }
+
+  #expenseTable th, #expenseTable td {
+    padding: 5px;
+    font-size: 10px;
+    background-color: rgb(215 235 251);
+  }
+
+  #expenseTable td.description {
+    max-width: 100%; /* Expand description to full width on mobile */
+  }
+ 
+}
+
+
+
+
+    table { 
       width: 100%;
       text-align: center;
       border-collapse: collapse;
@@ -144,10 +227,18 @@ h1.navbar-brand {
     }
     /*leaderBoard css*/
     #leaderboard-container {
-  background-color: #f9f9f9;
-  padding: 20px;
+      background-color: rgb(169, 202, 230);
+  padding: 9px;
   border-radius: 8px;
+  overflow: hidden;
 }
+#leaderboard-container th,#leaderboard-container td{
+  background-color: rgb(215 235 251);
+}
+#expense-table-container th,#expense-table-container td{
+  background-color: rgb(215 235 251);
+}
+
 
 .pagination-controls button {
   margin: 5px;
@@ -167,16 +258,17 @@ h3 {
 
 #prev-page, #next-page {
   margin: 0 10px;
-  padding: 10px 20px;
-  border-radius: 25px;
-  font-size: 16px;
-  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 15px;
+  
 }
 
 #page-info {
-  font-family: 'Lucida Sans', sans-serif;
-  font-size: 18px;
-  font-weight: bold;
+  font-family: sans-serif;
+  font-size: 12px;
+ font-weight: 600;
   color: #141415; /* Bootstrap primary blue */
   margin: 0 15px;
 }
@@ -202,7 +294,28 @@ h3 {
         #report-section {
             display: none;
             max-width: 100%;
+            background-color: rgb(169, 202, 230);
         }
+
+        /* expense lis pagination css*/
+        .pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.page-indicator {
+  margin: 0 10px;
+  font-weight: bold;
+}
+#reports{
+  font-family: sans-serif;
+  font-weight: 700;
+  font-size: 18;
+  color: rgba(0, 0, 0, 0.749);
+}
+      
 </style>
 </head>
 
@@ -228,7 +341,7 @@ h3 {
 
   
 
-  <div class="container">
+  <div id="mycontainer" class="container">
     <form id="myform">
       <div class="row mycont">
         <div class="col-md-4 mb-3">
@@ -249,7 +362,7 @@ h3 {
             <option value="Food and Drink">Food and Drink</option>
             <option value="Personal Care">Personal Care</option>
             <option value="Taxes">Taxes</option>
-            <option value="Taxes">Others</option>
+            <option value="Others">Others</option>
           </select>
         </div>
       </div>
@@ -266,18 +379,22 @@ h3 {
       <table id="expenseTable" class="table table-striped">
         <thead>
           <tr>
-            <th>Category</th>
-            <th>Description</th>
+            <th>Expense</th>
             <th>Amount</th>
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody id="productlist">
-     
-        </tbody>
+        <tbody id="productlist"></tbody>
       </table>
+      
+      <!-- Pagination Controls -->
+      <div class="pagination-controls">
+        <button id="expensePrevPageButton" class="btn btn-secondary" disabled>Previous</button>
+        <span id="currentExpensePageDisplay" class="page-indicator">Page 1</span>
+        <button id="expenseNextPageButton" class="btn btn-secondary">Next</button>
+      </div>
     </div>
-  </div>
+    
 
   <div class="container">
     <!-- Show Leaderboard Button -->
@@ -322,6 +439,7 @@ h3 {
                 <option value="nov">November</option>
                 <option value="dec">December</option>
             </select>
+            <input type="hidden" id="expensesId" name="expenseId" value="" />
         </div>
 
         <!-- Table to display expenses -->
@@ -344,7 +462,7 @@ h3 {
         <div id="no-data-message" class="text-danger mt-3" style="display: none;"></div>
         <button id="download-expenses" class="btn btn-primary mt-3" >
           <span id="download-spinner" class="spinner-border spinner-border-sm me-2" role="status" style="display: none;"></span>
-          Download Expenses as CSV
+          Download Expenses Report
       </button>
       <div id="recent-downloads" class="mt-4">
        
@@ -362,6 +480,9 @@ h3 {
     const amount=document.getElementById('amount').value;
     const description=document.getElementById('desc').value;
     const category=document.getElementById('category').value;
+    const expensesId=document.getElementById('expensesId').value;
+    console.log('bhai id araaa'+expensesId);
+   
    
     if (!amount || !description || category === 'select') {
         document.getElementById('error-message').innerText = 'All fields are required and must be filled out correctly.';
@@ -375,11 +496,23 @@ h3 {
         category:category
     };
     const token = localStorage.getItem('token');
-    console.log(token);
+    if (expensesId) {
+      
+      axios.put(`http://localhost:3000/expenses/update-expense/${expensesId}`, formdata,{headers:{'Authorization':token}})
+          .then(() => {
+            loadexpense(expenseCurrentPage);
+  document.getElementById('amount').value = '';
+  document.getElementById('desc').value = '';
+  document.getElementById('category').value = 'select';
+  document.getElementById('expensesId').value = ''; 
+            
+          }).catch(err => console.log(err));
+  } else{
+    
       axios.post("http://localhost:3000/expenses/addexpenses",formdata,{headers:{'Authorization':token}})
         .then((response)=>{
          
-           loadexpense();
+          loadexpense(expenseCurrentPage);
         
          document.getElementById('amount').value = '';
             document.getElementById('desc').value = '';
@@ -388,7 +521,7 @@ h3 {
             console.log(err);
         })
 
-    });
+      } });
     //parse jwt token
     function parseJwt (token) {
     var base64Url = token.split('.')[1];
@@ -400,41 +533,78 @@ h3 {
     return JSON.parse(jsonPayload);
 }
 
-    function loadexpense() {
-        const token = localStorage.getItem('token');
-        const decodeToken = parseJwt(token);
-        const isPremium = decodeToken.isPremiumuser;
-       
-       
-        updatePremiumStatus(isPremium);
-  axios.get("http://localhost:3000/expenses/getexpense",{headers:{'Authorization':token}})
-    .then((response) => {
-      const expenses = response.data.Allexpenses; 
-      const isPremium = response.data.isPrimium; 
-     
-    
-     
-          
-      const productList = document.getElementById('productlist');
-      productList.innerHTML = ''; 
+  
+  // Pagination state variables with unique names
+let expenseCurrentPage = 1;
+const expenseItemsPerPageLimit = 10;
 
-      expenses.forEach(expense => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${expense.category}</td>
-          <td>${expense.description}</td>
-          <td>${expense.amount}</td>
-          <td>
-            <button class="btn btn-danger" onclick="deleteExpense('${expense.id}')">Delete</button>
-          </td>
-        `;
-        productList.insertBefore(row,productList.firstChild);
-      });
-    })
-    .catch((error) => {
-      console.error('Error loading expenses:', error);
-    });
+function loadexpense(page = expenseCurrentPage) {
+  const userToken = localStorage.getItem('token');
+  const decodeToken = parseJwt(userToken);
+  const isPremium = decodeToken.isPremiumuser;
+  updatePremiumStatus(isPremium);
+  
+  axios.get(`http://localhost:3000/expenses/getexpense?page=${page}&limit=${expenseItemsPerPageLimit}`, {
+    headers: { 'Authorization': userToken }
+  })
+  .then((response) => {
+    const { expenses, totalPages, currentPage } = response.data;
+    displayExpenseList(expenses);
+    updateExpensePaginationControls(totalPages, currentPage);
+  })
+  .catch((error) => {
+    console.error('Error loading expenses:', error);
+  });
 }
+
+function displayExpenseList(expenses) {
+  const expenseProductList = document.getElementById('productlist');
+  expenseProductList.innerHTML = '';
+
+  expenses.forEach(expense => {
+    const expenseRow = document.createElement('tr');
+    expenseRow.innerHTML = `
+      <td>${expense.category} - ${expense.description}</td>
+      <td>${expense.amount}</td>
+      <td>
+        <button id="expenseEditButton" class="btn btn-sm btn-primary me-1" onclick="editExpense(${expense.id},${expense.amount},'${expense.description}','${expense.category}')">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteExpense('${expense.id}')">Delete</button>
+      </td>
+    `;
+    expenseProductList.appendChild(expenseRow);
+  });
+}
+
+function updateExpensePaginationControls(totalPages, currentPage) {
+  // Update the display of the current page number
+  document.getElementById('currentExpensePageDisplay').textContent = `Page ${currentPage}`;
+
+  const expensePrevPageButton = document.getElementById('expensePrevPageButton');
+  const expenseNextPageButton = document.getElementById('expenseNextPageButton');
+
+  // Enable/disable buttons based on the current page
+  expensePrevPageButton.disabled = currentPage <= 1;
+  expenseNextPageButton.disabled = currentPage >= totalPages;
+
+  // Set click event listeners for pagination buttons
+  expensePrevPageButton.onclick = () => {
+    if (expenseCurrentPage > 1) {
+      expenseCurrentPage--;
+      loadexpense(expenseCurrentPage);
+    }
+  };
+  
+  expenseNextPageButton.onclick = () => {
+    if (expenseCurrentPage < totalPages) {
+      expenseCurrentPage++;
+      loadexpense(expenseCurrentPage);
+    }
+  };
+}
+
+// Call loadexpense initially to load the first page
+loadexpense();
+
 
 function deleteExpense(id) {
     const token = localStorage.getItem('token');
@@ -445,12 +615,26 @@ function deleteExpense(id) {
   }
   axios.delete(`http://localhost:3000/expenses/delete-expense/${id}`,{headers:{'Authorization':token}})
     .then(() => {
-      loadexpense();
+      loadexpense(expenseCurrentPage); 
     })
     .catch((error) => {
       console.error('Error deleting expense:', error);
     });
 }
+
+
+function editExpense(id,amount,description,category) {
+                document.getElementById('amount').value = amount;
+            document.getElementById('desc').value = description;
+            document.getElementById('category').value =category;
+            document.getElementById('expensesId').value =id;
+           const editForm= document.getElementById('mycontainer')
+            
+            editForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+
+}
+
 //Razor-pay Integration
 document.getElementById('rz-pay').onclick = async function(e){
   const token =localStorage.getItem('token');
@@ -512,7 +696,7 @@ function updatePremiumStatus(isPremium) {
         // Add the "Premium User" message
         const premiumMessageDiv = document.createElement('div');
         premiumMessageDiv.id = 'premium-message';
-        premiumMessageDiv.className = 'text-success fw-bold d-block text-center';
+        premiumMessageDiv.className = 'text-success  d-block text-center';
         premiumMessageDiv.innerHTML = 'You are a Premium User! 💎 &emsp13;&nbsp;&emsp13;&nbsp;';
         
         navbar.insertBefore(premiumMessageDiv, buyPremiumButton);
@@ -535,7 +719,7 @@ function updatePremiumStatus(isPremium) {
         const leaderboardLink = document.createElement('a');
         leaderboardLink.id = 'Leaderboardmain';
         leaderboardLink.className = 'nav-link';
-        leaderboardLink.innerHTML = '<font style="font-family:\'Lucida Sans\', \'Lucida Sans Regular\', \'Lucida Grande\', \'Lucida Sans Unicode\', Geneva, Verdana, sans-serif, serif;font-weight: 800;font-size: 18px;">LeaderBoard👑</font>';
+        leaderboardLink.innerHTML = '<font style="font-family:sans-serif, serif;font-weight: 600;font-size: 18px;">LeaderBoard👑</font>';
         leaderboardLink.style.cursor = 'pointer'; 
         leaderboardLink.addEventListener('click', function() {
             showLeaderboard(); 
@@ -549,14 +733,14 @@ function updatePremiumStatus(isPremium) {
 }
 
 let leaderboardData = []; // Declare leaderboardData globally
-let itemsPerPage = 1; // Declare itemsPerPage globally
-let currentPage = 1; // Declare currentPage globally
+let itemsPerPage = 10; // Declare itemsPerPage globally
+let leadercurrentPage = 1; // Declare currentPage globally
 
 //leaderBoard logic//////////////////////////////////////////////////////////////////////
 // Function to show leaderboard
 // Function to show leaderboard
 function showLeaderboard() {
-    currentPage = 1; // Reset current page when showing leaderboard
+    leadercurrentPage = 1; // Reset current page when showing leaderboard
     // Fetch leaderboard data from backend
     const token = localStorage.getItem('token');
     
@@ -565,7 +749,7 @@ function showLeaderboard() {
     })
     .then(response => {
         leaderboardData = response.data; // Get the data directly from the response
-        displayLeaderboardPage(currentPage); // Pass current page only
+        displayLeaderboardPage(leadercurrentPage); // Pass current page only
         document.getElementById('leaderboard-container').style.display = 'block';
         var leaderboardSection = document.getElementById('leaderboard-container');
         leaderboardSection.scrollIntoView({ behavior: 'smooth' });
@@ -601,16 +785,16 @@ function displayLeaderboardPage(page) {
 
 // Pagination controls
 document.getElementById('prev-page').addEventListener('click', () => {
-    if (currentPage > 1) {
-        currentPage--;
-        displayLeaderboardPage(currentPage);
+    if (leadercurrentPage > 1) {
+        leadercurrentPage--;
+        displayLeaderboardPage(leadercurrentPage);
     }
 });
 
 document.getElementById('next-page').addEventListener('click', () => {
-    if ((currentPage * itemsPerPage) < leaderboardData.length) {
-        currentPage++;
-        displayLeaderboardPage(currentPage);
+    if ((leadercurrentPage * itemsPerPage) < leaderboardData.length) {
+        leadercurrentPage++;
+        displayLeaderboardPage(leadercurrentPage);
     }
 });
 //report one 
@@ -626,7 +810,7 @@ document.getElementById('month-select').addEventListener('change', function () {
         axios.get('http://localhost:3000/expenses/getexpense', { headers: { 'Authorization': token } })
             .then(response => {
                 if (response.data.success) {
-                    allExpenses = response.data.Allexpenses;
+                    allExpenses = response.data.expenses;
                     organizeExpensesByMonth(allExpenses);
                     setDefaultMonth();
                 }
@@ -734,10 +918,14 @@ document.getElementById('month-select').addEventListener('change', function () {
                
                 const downloadList = document.createElement('ul');
                 downloadList.classList.add('list-unstyled');
+               
 
                 response.data.downloads.slice(0, 5).forEach(download => {
                     const listItem = document.createElement('li');
-                    listItem.innerHTML = `<a href="${download.fileURL}" target="_self">Download on ${new Date(download.createdAt).toLocaleDateString()}</a>`;
+                    const createdDate = new Date(download.createdAt);
+                    const date = createdDate.toLocaleDateString();
+                    const time = createdDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    listItem.innerHTML = `<a href="${download.fileURL}" target="_self">Download on ${date} at ${time}</a>`;
                     downloadList.appendChild(listItem);
                 });
 

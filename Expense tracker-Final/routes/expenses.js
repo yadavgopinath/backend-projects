@@ -10,5 +10,6 @@ const express = require('express');
 
 
  router.delete('/delete-expense/:expid',userAuthentication.authenticate,controller.deleteexpenses);
+ router.put('/update-expense/:expid',userAuthentication.authenticate,controller.editexpenses);
 
  module.exports = router;

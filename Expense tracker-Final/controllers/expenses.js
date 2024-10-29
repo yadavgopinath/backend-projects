@@ -53,18 +53,45 @@ exports.addexpenses = async(req,res,next)=>{
 }
 
 exports.getexpenses = async(req,res,next)=>{
-    console.log('hi');
-    try{
+    try {
+        const userId = req.user.id;
+    
+        // Get pagination parameters from the query, with default values for page and limit
+        const currentPage = parseInt(req.query.page) || 1;  // Default to page 1
+        const itemsPerPageLimit = parseInt(req.query.limit) || 10;  // Default limit to 10 items per page
         
-     const Allexpenses=  await expenses.findAll({where:{userid:req.user.id}});
-     return res.status(200).json({Allexpenses,success:true});
-
-    }catch(err){
+        // Calculate the offset (how many items to skip based on the page number)
+        const offset = (currentPage - 1) * itemsPerPageLimit;
+    
+        // Query the total count of expenses for the user (for pagination calculation)
+        const totalExpensesCount = await expenses.count({ where: { userid: userId } });
+        
+        // Calculate the total number of pages based on the count
+        const totalPages = Math.ceil(totalExpensesCount / itemsPerPageLimit);
+    
+        // Fetch only the expenses for the current page
+        const expensesData = await expenses.findAll({
+            where: { userid: userId },
+            limit: itemsPerPageLimit,
+            offset: offset,
+            order: [['createdAt', 'DESC']] // Adjust 'createdAt' to your actual timestamp field if different
+        });
+    
+        // Send the paginated data, along with pagination info, to the frontend
+        return res.status(200).json({
+          expenses: expensesData,
+          totalPages: totalPages,
+          currentPage: currentPage,
+          success: true
+        });
+    
+      } catch (error) {
+        console.error("Error fetching expenses:", error);
         return res.status(500).json({
-            error:err,
-            message: 'Server error, please try again.'
-        })
-    }
+          error: error,
+          message: 'Server error, please try again.'
+        });
+      }
 
 }
 
@@ -157,4 +184,30 @@ exports.previousdownloads = async(req,res,next)=>{
     res.status(500).json({message:'Error fetching last five downloads:',err}); 
 }
 
+}
+
+//edit expense
+
+exports.editexpenses = async(req,res,next)=>{
+    console.log('bhai expense id '+req.params.expid+'user id'+req.user.id);
+    const { expid } = req.params; // Extract expense ID from route params
+    const { amount, description, category } = req.body; // Extract updated data from request body
+    console.log('bhai 3no hai dekhle'+amount+description+category);
+    const userId=req.user.id;
+
+    try {
+        const expense = await expenses.findOne({ where: { id: expid, userId: userId } });
+        
+        if (!expense) {
+            return res.status(404).json({ message: "Expense not found." });
+        }
+
+        // Update the expense with new values
+        await expense.update({ amount, description, category });
+
+        res.status(200).json({ message: "Expense updated successfully", expense });
+    }catch(err){
+        console.error("Error while editing:", err);
+        res.status(500).json({message:'Error while editing:',err}); 
+    }
 }
